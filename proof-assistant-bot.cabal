@@ -1,0 +1,73 @@
+cabal-version:      2.4
+name:               proof-assistant-bot
+version:            0.1.0
+synopsis:           Telegram bot for proof assistants
+-- description:
+-- category:        
+-- homepage:
+-- bug-reports:        
+license:            MIT
+license-file:       LICENSE                    
+author:             Andrey Prokopenko
+maintainer:         persiantiger@yandex.ru
+
+extra-source-files: CHANGELOG.md
+
+library
+    hs-source-dirs:   src
+    ghc-options:      -Wall
+    default-language: Haskell2010
+    build-depends:    base < 4.17
+                    , async
+                    , bytestring
+                    , dhall
+                    , directory
+                    , filepath
+                    , mtl
+                    , process
+                    , stm
+                    , telegram-bot-simple >= 0.5.2
+                    , text
+                    , unix
+                    , unordered-containers
+                    -- interpreters
+                    , Agda
+    exposed-modules:  Proof.Assistant.Agda
+                    , Proof.Assistant.Bot
+                    , Proof.Assistant.Helpers
+                    , Proof.Assistant.Interpreter
+                    , Proof.Assistant.Request
+                    , Proof.Assistant.ResourceLimit
+                    , Proof.Assistant.Response
+                    , Proof.Assistant.State
+                    , Proof.Assistant.Settings
+                    , Proof.Assistant.Transport
+
+                    , Agda.Interaction.Command
+                    , Agda.Interaction.Command.EvalIn
+                    , Agda.Interaction.Command.EvalTerm
+                    , Agda.Interaction.Command.GiveMeta
+                    , Agda.Interaction.Command.Internal.Parser
+                    , Agda.Interaction.Command.RefineMeta
+                    , Agda.Interaction.Command.Reload
+                    , Agda.Interaction.Command.RetryConstraints
+                    , Agda.Interaction.Command.ShowConstraints
+                    , Agda.Interaction.Command.ShowContext
+                    , Agda.Interaction.Command.ShowMetas
+                    , Agda.Interaction.Command.ShowScope
+                    , Agda.Interaction.Command.TypeIn
+                    , Agda.Interaction.Command.TypeOf
+                    , Agda.Interaction.State
+
+executable proof-assistant-bot
+    main-is:          Main.hs
+
+    -- Modules included in this executable, other than Main.
+    -- other-modules:
+
+    -- LANGUAGE extensions used by modules in this package.
+    -- other-extensions:
+    build-depends:    base ^>=4.14.3.0
+                    , proof-assistant-bot
+    hs-source-dirs:   app
+    default-language: Haskell2010

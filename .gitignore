@@ -1,0 +1,5 @@
+dist-newstyle
+*~
+agda/
+*.agda
+*.agdai
