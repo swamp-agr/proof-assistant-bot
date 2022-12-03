@@ -44,7 +44,7 @@ let emptyExternalSettings =
       } : ExternalSettings
 let emptyInternalSettings =
       { timeout = 10
-      , allocations = 10000000000
+      , allocations = 20000000000
       , inputSize = 1000000
       , sourceFilePrefix = ""
       , sourceFileExtension = ""
