@@ -2,6 +2,7 @@
 {-# LANGUAGE DeriveAnyClass #-}
 {-# LANGUAGE DerivingStrategies #-}
 {-# LANGUAGE DuplicateRecordFields #-}
+{-# LANGUAGE GeneralizedNewtypeDeriving #-}
 {-# LANGUAGE OverloadedStrings #-}
 module Proof.Assistant.Settings where
 
@@ -39,20 +40,29 @@ data AgdaSettings = AgdaSettings
   { internal :: !InternalInterpreterSettings
   } deriving (Generic, FromDhall)
 
-newtype CmdArgs = CmdArgs Text
-  deriving (Generic, FromDhall)
+newtype IdrisSettings = IdrisSettings ExternalInterpreterSettings
+  deriving newtype (FromDhall, ToInterpreterState)
+  deriving stock Generic
+
+newtype CmdArgs = CmdArgs [Text]
+  deriving stock Generic
+  deriving newtype FromDhall
 
 newtype Packages = Packages Text
-  deriving (Generic, FromDhall)  
+  deriving stock Generic
+  deriving newtype FromDhall
 
 newtype Executable = Executable Text
-  deriving (Generic, FromDhall)
+  deriving stock Generic
+  deriving newtype FromDhall
 
 newtype Time = Time Natural
-  deriving (Generic, FromDhall)
+  deriving stock Generic
+  deriving newtype FromDhall
 
 newtype Priority = Priority Natural
-  deriving (Generic, FromDhall)
+  deriving stock Generic
+  deriving newtype FromDhall
 
 data ResourceSettings = ResourceSettings
   { totalMemory :: !Limit
@@ -70,7 +80,7 @@ data Limit = Limit
 data InterpretersSettings = InterpretersSettings
   { agda  :: !AgdaSettings
   , arend :: !ExternalInterpreterSettings
-  , idris :: !ExternalInterpreterSettings
+  , idris :: !IdrisSettings
   , coq   :: !ExternalInterpreterSettings
   , lean  :: !ExternalInterpreterSettings
   , rzk   :: !InternalInterpreterSettings

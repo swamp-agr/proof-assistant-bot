@@ -35,7 +35,9 @@ library
     exposed-modules:  Proof.Assistant.Agda
                     , Proof.Assistant.Bot
                     , Proof.Assistant.Helpers
+                    , Proof.Assistant.Idris
                     , Proof.Assistant.Interpreter
+                    , Proof.Assistant.RefreshFile
                     , Proof.Assistant.Request
                     , Proof.Assistant.ResourceLimit
                     , Proof.Assistant.Response
@@ -58,6 +60,8 @@ library
                     , Agda.Interaction.Command.TypeIn
                     , Agda.Interaction.Command.TypeOf
                     , Agda.Interaction.State
+
+                    , Idris.Interaction.Command
 
 executable proof-assistant-bot
     main-is:          Main.hs

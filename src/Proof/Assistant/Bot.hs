@@ -38,6 +38,7 @@ updateToAction :: Model -> Update -> Maybe Action
 updateToAction BotState{..} update
   | isCommand "coq" update = Call <$> Just Coq <*> updateToRequest update
   | isCommand "agda" update = Call <$> Just Agda <*> updateToRequest update
+  | isCommand "idris2" update = Call <$> Just Idris <*> updateToRequest update
   | otherwise = Just $ Debug $ show update
   where
     updateToRequest upd =
