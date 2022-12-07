@@ -6,13 +6,10 @@
 {-# LANGUAGE TypeApplications #-}
 module Proof.Assistant.Agda where
 
-import Control.Concurrent (threadDelay)
 import Control.Concurrent.Async
 import Control.Exception
 import Data.ByteString (ByteString)
-import Data.Char (isSpace)
 import Data.Coerce
-import Dhall (Natural)
 import System.Directory (getTemporaryDirectory)
 import System.FilePath ((</>), (<.>))
 import System.Mem
@@ -76,9 +73,3 @@ parseRequest rawCmd = case BS8.words rawSubCommand of
     else Right (Left (), rawSubCommand)
   where
     rawSubCommand = dropCommand rawCmd
-
-asyncWait :: Time -> IO ()
-asyncWait n = threadDelay (toInt @_ @Natural n * 1000000)
-
-dropCommand :: ByteString -> ByteString
-dropCommand = BS8.dropWhile isSpace . BS8.dropWhile (not . isSpace)

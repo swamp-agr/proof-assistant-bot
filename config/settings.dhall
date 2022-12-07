@@ -1,6 +1,6 @@
 let Limit = { soft : Natural, hard : Natural }
 let ExternalSettings =
-      { args : Text
+      { args : List Text
       , packages : Text
       , executable : Text
       , time : Natural
@@ -32,10 +32,10 @@ let defaultResource =
       , cpuTime = { soft = 4, hard = 5 }
       }
 let emptyExternalSettings =
-      { args = "" 
+      { args = [] : List Text
       , packages = ""
       , executable = ""
-      , time = 1
+      , time = 2
       , priority = 20
       , resources = defaultResource
       , fileExtension = ""
@@ -50,11 +50,17 @@ let emptyInternalSettings =
       , sourceFileExtension = ""
       } : InternalSettings
 let coqSettings = emptyExternalSettings //
-      { args = "-quiet" 
+      { args = ["-quiet"] : List Text
       , executable = env:COQ_BIN_PATH as Text
       , fileExtension = "v"
       , tempFilePrefix = "coq"
       } : ExternalSettings
+let idrisSettings = emptyExternalSettings //
+      { args = ["--no-banner", "--no-color", "--client"] : List Text
+      , executable = env:IDRIS2_BIN_PATH as Text
+      , tempFilePrefix = "idris"
+      , fileExtension = "idr"
+      }
 let Settings = { botName : Text
                , allowedCommands : List Text
                , botToken : Text
@@ -75,7 +81,7 @@ let interpreterSettings =
                }
           }
       , arend = emptyExternalSettings
-      , idris = emptyExternalSettings
+      , idris = idrisSettings
       , coq = coqSettings
       , lean = emptyExternalSettings
       , rzk  = emptyInternalSettings
