@@ -24,6 +24,10 @@ let InternalSettings =
       , sourceFileExtension : Text
       }
 let AgdaSettings = { internal : InternalSettings }
+let LeanSettings =
+      { projectDir : Text
+      , external : ExternalSettings
+      }
 let defaultResource =
       { totalMemory = { soft = 5, hard = 10 }
       , dataSize = { soft = 2176782336, hard = 2176782336 }
@@ -61,6 +65,15 @@ let idrisSettings = emptyExternalSettings //
       , tempFilePrefix = "idris"
       , fileExtension = "idr"
       }
+let leanSettings = { external = emptyExternalSettings //
+                       { args = ["--profile"] : List Text
+                       , executable = env:LEAN_BIN_PATH as Text
+                       , tempFilePrefix = "lean"
+                       , fileExtension = "lean"
+                       , time = 10
+                       }
+                   , projectDir = env:LEAN_PROJECT_PATH as Text
+                   }
 let Settings = { botName : Text
                , allowedCommands : List Text
                , botToken : Text
@@ -68,7 +81,7 @@ let Settings = { botName : Text
                                         , arend : ExternalSettings 
                                         , idris : ExternalSettings 
                                         , coq : ExternalSettings 
-                                        , lean : ExternalSettings 
+                                        , lean : LeanSettings 
                                         , rzk : InternalSettings
                                         }
                , outputSize : Natural
@@ -83,7 +96,7 @@ let interpreterSettings =
       , arend = emptyExternalSettings
       , idris = idrisSettings
       , coq = coqSettings
-      , lean = emptyExternalSettings
+      , lean = leanSettings
       , rzk  = emptyInternalSettings
       }
 

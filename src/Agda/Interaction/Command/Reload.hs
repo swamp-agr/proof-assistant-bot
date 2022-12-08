@@ -16,7 +16,7 @@ import Agda.Utils.Null (unlessNullM)
 import Control.Monad.Except (MonadError(..), unless)
 import Data.ByteString (ByteString)
 
-import Agda.Interaction.Command.Internal.Parser
+import Proof.Assistant.Helpers (toBS)
 
 reload :: Maybe AbsolutePath -> TCM ByteString
 reload Nothing = pure "Failed to type check."

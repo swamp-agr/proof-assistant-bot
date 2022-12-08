@@ -37,6 +37,7 @@ library
                     , Proof.Assistant.Helpers
                     , Proof.Assistant.Idris
                     , Proof.Assistant.Interpreter
+                    , Proof.Assistant.Lean
                     , Proof.Assistant.RefreshFile
                     , Proof.Assistant.Request
                     , Proof.Assistant.ResourceLimit

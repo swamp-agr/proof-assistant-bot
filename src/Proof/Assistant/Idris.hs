@@ -27,7 +27,7 @@ callIdris2 InterpreterState{..} ir@InterpreterRequest{..}
               (exitCode, stdout, stderr) <- action
               let response = unlines [if stdout == "\n" then "Done." else stdout, stderr]
               putStrLn $ show exitCode <> " " <> response
-              pure $ BS8.pack response
+              pure $ toBS response
             asyncTimer = asyncWait time
         eresult <- race asyncTimer asyncExecutable
         case eresult of

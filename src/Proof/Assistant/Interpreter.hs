@@ -23,11 +23,10 @@ import System.Process
 
 import Agda.Interaction.State
 
-import qualified Data.ByteString.Char8 as BS8
-
 import Proof.Assistant.Agda
 import Proof.Assistant.Idris
 import Proof.Assistant.Helpers
+import Proof.Assistant.Lean
 import Proof.Assistant.Request
 import Proof.Assistant.RefreshFile
 import Proof.Assistant.ResourceLimit
@@ -58,7 +57,7 @@ instance Interpreter AgdaState AgdaSettings where
 instance Interpreter ExternalState ExternalInterpreterSettings where
   interpretSafe is request = do
     let settings' = settings is
-    tmpFilePath <- refreshTmpFile settings' request
+    tmpFilePath <- refreshTmpFile settings' request Nothing
     callExternalInterpreter settings' tmpFilePath
   getSettings = id
 
@@ -66,8 +65,11 @@ instance Interpreter (InterpreterState IdrisSettings) IdrisSettings where
   interpretSafe state request = callIdris2 state request
   getSettings = id
 
--- ** External Interpreter
+instance Interpreter (InterpreterState LeanSettings) LeanSettings where
+  interpretSafe state request = callLean state request
+  getSettings = id
 
+-- ** External Interpreter
 
 callExternalInterpreter
   :: ExternalInterpreterSettings -> (FilePath, FilePath) -> IO ByteString
@@ -78,7 +80,7 @@ callExternalInterpreter ExternalInterpreterSettings{..} (dir, path)
             setPriority priority
             (exitCode, stdout, stderr) <- readProcessWithExitCode (t2s executable) (unpack <$> coerce args) contents
             putStrLn $ show exitCode <> " " <> stderr
-            pure $ BS8.pack $ unlines [stdout, stderr]
+            pure $ toBS $ unlines [stdout, stderr]
           asyncTimer = asyncWait time
       eresult <- race asyncTimer asyncExecutable
       case eresult of

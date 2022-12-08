@@ -13,11 +13,15 @@ import Proof.Assistant.Settings
 
 import qualified Data.ByteString.Char8 as BS8
 
-refreshTmpFile :: ExternalInterpreterSettings -> InterpreterRequest -> IO (FilePath, FilePath)
+refreshTmpFile
+  :: ExternalInterpreterSettings
+  -> InterpreterRequest
+  -> Maybe FilePath
+  -> IO (FilePath, FilePath)
 refreshTmpFile
   settings
-  ir@InterpreterRequest{interpreterRequestMessage} = do
-    tmpDir <- getTemporaryDirectory
+  ir@InterpreterRequest{interpreterRequestMessage} mDir = do
+    tmpDir <- maybe getTemporaryDirectory pure mDir
     let tmpFilepath = getTempFilePath settings ir tmpDir
         createFile = do
           BS8.writeFile tmpFilepath $ dropSubCommand interpreterRequestMessage

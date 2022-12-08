@@ -19,7 +19,7 @@ data Interpreters = Interpreters
   , arend :: !ExternalState
   , idris :: !(InterpreterState IdrisSettings)
   , coq   :: !ExternalState
-  , lean  :: !ExternalState
+  , lean  :: !(InterpreterState LeanSettings)
   , rzk   :: !InternalState
   }
 

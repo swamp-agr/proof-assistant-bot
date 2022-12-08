@@ -16,6 +16,7 @@ import Proof.Assistant.Settings (Time (..))
 
 import qualified Data.ByteString.Char8 as BS8
 import qualified Data.Text as Text
+import qualified Data.Text.Encoding as Text
 
 toInt :: forall a b. (Num b, Integral b, Coercible a b) => a -> Int
 toInt = fromIntegral . coerce @_ @b
@@ -34,3 +35,6 @@ dropCommand xs = if BS8.take 1 xs == "/" then drop' xs else xs
 
 dropSubCommand :: ByteString -> ByteString
 dropSubCommand = dropCommand . dropCommand
+
+toBS :: String -> ByteString
+toBS = Text.encodeUtf8 . Text.pack

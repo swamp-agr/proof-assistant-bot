@@ -16,8 +16,6 @@ import Data.Maybe (fromMaybe)
 import Text.Read (readMaybe)
 
 import qualified Data.ByteString.Char8 as BS8
-import qualified Data.Text as Text
-import qualified Data.Text.Encoding as Text
 
 metaParseExpr ::  InteractionId -> ByteString -> TCM Expr
 metaParseExpr ii s =
@@ -41,9 +39,6 @@ parseExpr :: String -> TCM Expr
 parseExpr s = do
     e <- runPM $ parse exprParser s
     localToAbstract e return
-
-toBS :: String -> ByteString
-toBS = Text.encodeUtf8 . Text.pack
 
 readM :: Read a => String -> TCM a
 readM s = maybe err return $ readMaybe s

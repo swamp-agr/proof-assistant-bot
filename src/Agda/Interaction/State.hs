@@ -11,7 +11,7 @@ import Data.ByteString (ByteString)
 import Data.IORef (IORef, newIORef, readIORef, atomicWriteIORef, atomicModifyIORef')
 import System.Directory (getTemporaryDirectory, withCurrentDirectory)
 
-import Agda.Interaction.Command.Internal.Parser (toBS)
+import Proof.Assistant.Helpers (toBS)
 import Proof.Assistant.Settings
 import Proof.Assistant.State
 
