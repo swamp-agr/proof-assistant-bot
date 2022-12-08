@@ -73,6 +73,22 @@ standard-library
 $AGDA_STDLIB_PATH/standard-library.agda-lib
 ```
 
+### Idris 2
+
+1. Get `nix` from [nixos.org](https://nixos.org/download.html#download-nix).
+
+2. Install `idris2` via `nix`:
+
+```
+nix-env -i idris2
+```
+
+3. Set environmental variable:
+
+```
+export IDRIS2_BIN_PATH="$HOME/.nix-profile/bin/idris2"
+```
+
 ## Usage
 
 ## Available instances
