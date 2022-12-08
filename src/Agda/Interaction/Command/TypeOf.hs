@@ -8,6 +8,7 @@ import Agda.Utils.Pretty (prettyShow)
 import Data.ByteString (ByteString)
 
 import Agda.Interaction.Command.Internal.Parser
+import Proof.Assistant.Helpers (toBS)
 
 import qualified Data.ByteString.Char8 as BS8
 

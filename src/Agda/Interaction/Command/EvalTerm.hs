@@ -7,6 +7,7 @@ import Agda.Interaction.BasicOps hiding (parseExpr)
 import Agda.TypeChecking.Monad.Base (TCM)
 import Agda.TypeChecking.Pretty (prettyTCM)
 import Agda.Utils.Pretty (prettyShow)
+import Proof.Assistant.Helpers (toBS)
 
 import Data.ByteString (ByteString)
 

@@ -5,7 +5,7 @@ import Agda.TypeChecking.Monad.State (getScope)
 import Agda.Utils.Pretty (prettyShow)
 import Data.ByteString (ByteString)
 
-import Agda.Interaction.Command.Internal.Parser (toBS)
+import Proof.Assistant.Helpers (toBS)
 
 showScope :: TCM ByteString
 showScope = do

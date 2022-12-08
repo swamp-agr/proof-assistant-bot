@@ -9,6 +9,7 @@ import Agda.Utils.Pretty (prettyShow)
 import Data.ByteString (ByteString)
 
 import Agda.Interaction.Command.Internal.Parser
+import Proof.Assistant.Helpers (toBS)
 
 evalIn :: [ByteString] -> TCM ByteString
 evalIn s | length s >= 2 =

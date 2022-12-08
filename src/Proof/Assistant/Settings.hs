@@ -40,6 +40,11 @@ data AgdaSettings = AgdaSettings
   { internal :: !InternalInterpreterSettings
   } deriving (Generic, FromDhall)
 
+data LeanSettings = LeanSettings
+  { projectDir :: !FilePath
+  , external   :: !ExternalInterpreterSettings
+  } deriving (Generic, FromDhall)
+
 newtype IdrisSettings = IdrisSettings ExternalInterpreterSettings
   deriving newtype (FromDhall, ToInterpreterState)
   deriving stock Generic
@@ -82,7 +87,7 @@ data InterpretersSettings = InterpretersSettings
   , arend :: !ExternalInterpreterSettings
   , idris :: !IdrisSettings
   , coq   :: !ExternalInterpreterSettings
-  , lean  :: !ExternalInterpreterSettings
+  , lean  :: !LeanSettings
   , rzk   :: !InternalInterpreterSettings
   } deriving (Generic, FromDhall)
 
@@ -103,3 +108,6 @@ instance ToInterpreterState ExternalInterpreterSettings where
 
 instance ToInterpreterState AgdaSettings where
   getQueueSize = getQueueSize . internal
+
+instance ToInterpreterState LeanSettings where
+  getQueueSize = getQueueSize . external

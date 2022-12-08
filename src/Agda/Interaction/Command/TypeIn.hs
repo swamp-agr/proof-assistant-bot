@@ -9,6 +9,7 @@ import Agda.Utils.Pretty (prettyShow)
 import Data.ByteString (ByteString)
 
 import Agda.Interaction.Command.Internal.Parser
+import Proof.Assistant.Helpers (toBS)
 
 typeIn :: [ByteString] -> TCM ByteString
 typeIn s@(_:_:_) =

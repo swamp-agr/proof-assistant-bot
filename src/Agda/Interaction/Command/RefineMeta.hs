@@ -8,6 +8,7 @@ import Data.ByteString (ByteString)
 import Agda.Interaction.Base (UseForce (..))
 import Agda.Interaction.BasicOps (refine)
 import Agda.Interaction.Command.Internal.Parser
+import Proof.Assistant.Helpers (toBS)
 
 refineMeta :: [ByteString] -> TCM ByteString
 refineMeta s | length s >= 2 = do

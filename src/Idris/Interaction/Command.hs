@@ -5,6 +5,7 @@
 module Idris.Interaction.Command where
 
 import Data.ByteString (ByteString)
+import Data.Char (isSpace)
 import Data.Coerce (coerce)
 import Data.Text (unpack)
 import Data.HashMap.Strict (HashMap)
@@ -43,10 +44,10 @@ chooseCommand
 chooseCommand settings request ecmd input = case ecmd of
   Left () ->
     withResource settings request
-      $ runProcess settings (BS8.unpack input) . takeFileName
+      $ runProcess settings (BS8.unpack $ validate input) . takeFileName
   Right cmd -> case cmd of
     Load -> do
-      (dir, path) <- refreshTmpFile settings request
+      (dir, path) <- refreshTmpFile settings request Nothing
       pure $ withCurrentDirectory dir $ runProcess settings "main" $ takeFileName path
     TypeOf ->
       withResource settings request
@@ -75,3 +76,10 @@ runProcess ExternalInterpreterSettings{..} input path =
   readProcessWithExitCode (t2s executable) fullArgs ""
   where
     fullArgs = (unpack <$> coerce args) <> [input, path]
+
+validate :: ByteString -> ByteString
+validate xs =
+  let cut = if BS8.take 1 xs == ":"
+        then BS8.dropWhile isSpace . BS8.dropWhile (not . isSpace)
+        else id
+  in cut xs

@@ -9,6 +9,7 @@ import Data.ByteString (ByteString)
 import Agda.Interaction.Base (UseForce (..))
 import Agda.Interaction.BasicOps (give)
 import Agda.Interaction.Command.Internal.Parser
+import Proof.Assistant.Helpers (toBS)
 
 giveMeta :: [ByteString] -> TCM ByteString
 giveMeta s | length s >= 2 = do

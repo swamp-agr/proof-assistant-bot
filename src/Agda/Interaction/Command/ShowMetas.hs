@@ -16,6 +16,7 @@ import Agda.Utils.Pretty (prettyShow, render)
 import Data.ByteString (ByteString)
 
 import Agda.Interaction.Command.Internal.Parser
+import Proof.Assistant.Helpers (toBS)
 
 import qualified Agda.Syntax.Internal as I
 import qualified Data.ByteString.Char8 as BS8
