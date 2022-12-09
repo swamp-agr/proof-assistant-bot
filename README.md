@@ -79,15 +79,41 @@ $AGDA_STDLIB_PATH/standard-library.agda-lib
 
 2. Install `idris2` via `nix`:
 
-```
+```bash
 nix-env -i idris2
 ```
 
 3. Set environmental variable:
 
-```
+```bash
 export IDRIS2_BIN_PATH="$HOME/.nix-profile/bin/idris2"
 ```
+
+### Lean
+
+1. Get `nix` from [nixos.org](https://nixos.org/download.html#download-nix).
+
+2. Install `lean` via `nix`:
+
+```bash
+nix-env -i lean
+```
+
+3. Install `leanproject` via `nix`:
+
+```bash
+nix-env -i mathlibtools
+```
+
+4. Run `leanproject new lean`.
+
+5. Set `LEAN_BIN_PATH` environmental variable:
+
+```bash
+export LEAN_BIN_PATH="$HOME/.nix-profile/bin/lean"
+```
+
+6. Set `LEAN_PROJECT_PATH` to the newly created project directory.
 
 ## Usage
 
