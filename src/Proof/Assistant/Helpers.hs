@@ -38,3 +38,9 @@ dropSubCommand = dropCommand . dropCommand
 
 toBS :: String -> ByteString
 toBS = Text.encodeUtf8 . Text.pack
+
+bsToText :: ByteString -> Text
+bsToText = Text.decodeUtf8
+
+textToBS :: Text -> ByteString
+textToBS = toBS . t2s
