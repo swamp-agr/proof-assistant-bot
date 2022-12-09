@@ -24,6 +24,7 @@ import System.Process
 import Agda.Interaction.State
 
 import Proof.Assistant.Agda
+import Proof.Assistant.Arend
 import Proof.Assistant.Idris
 import Proof.Assistant.Helpers
 import Proof.Assistant.Lean
@@ -67,6 +68,10 @@ instance Interpreter (InterpreterState IdrisSettings) IdrisSettings where
 
 instance Interpreter (InterpreterState LeanSettings) LeanSettings where
   interpretSafe state request = callLean state request
+  getSettings = id
+
+instance Interpreter (InterpreterState ArendSettings) ArendSettings where
+  interpretSafe state request = callArend state request
   getSettings = id
 
 -- ** External Interpreter

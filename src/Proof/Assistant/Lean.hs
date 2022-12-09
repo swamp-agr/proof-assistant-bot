@@ -16,12 +16,10 @@ import Proof.Assistant.ResourceLimit
 import Proof.Assistant.Settings
 import Proof.Assistant.State
 
-import qualified Data.Text as Text
-
 callLean :: InterpreterState LeanSettings -> InterpreterRequest -> IO ByteString
 callLean InterpreterState{..} ir = do
   let LeanSettings{..} = coerce settings
-      s@ExternalInterpreterSettings{..} = external
+      s@ExternalInterpreterSettings{..} = externalLean
   (dir, path) <- refreshTmpFile s ir (Just projectDir)
   withCurrentDirectory dir $ do
     let fullArgs = (unpack <$> coerce args) <> [path]
@@ -35,9 +33,3 @@ callLean InterpreterState{..} ir = do
     case eresult of
       Left ()  -> pure "Time limit exceeded"
       Right bs -> pure bs
-
-validate :: FilePath -> ByteString -> ByteString
-validate path bs = textToBS (Text.replace textPath "<bot>" txt)
-  where
-    textPath = Text.pack path
-    txt = bsToText bs

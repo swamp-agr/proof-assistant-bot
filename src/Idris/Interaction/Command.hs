@@ -44,7 +44,7 @@ chooseCommand
 chooseCommand settings request ecmd input = case ecmd of
   Left () ->
     withResource settings request
-      $ runProcess settings (BS8.unpack $ validate input) . takeFileName
+      $ runProcess settings (BS8.unpack $ validateCmd input) . takeFileName
   Right cmd -> case cmd of
     Load -> do
       (dir, path) <- refreshTmpFile settings request Nothing
@@ -77,8 +77,8 @@ runProcess ExternalInterpreterSettings{..} input path =
   where
     fullArgs = (unpack <$> coerce args) <> [input, path]
 
-validate :: ByteString -> ByteString
-validate xs =
+validateCmd :: ByteString -> ByteString
+validateCmd xs =
   let cut = if BS8.take 1 xs == ":"
         then BS8.dropWhile isSpace . BS8.dropWhile (not . isSpace)
         else id

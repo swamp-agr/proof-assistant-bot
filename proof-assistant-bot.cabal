@@ -33,6 +33,7 @@ library
                     -- interpreters
                     , Agda
     exposed-modules:  Proof.Assistant.Agda
+                    , Proof.Assistant.Arend
                     , Proof.Assistant.Bot
                     , Proof.Assistant.Helpers
                     , Proof.Assistant.Idris
