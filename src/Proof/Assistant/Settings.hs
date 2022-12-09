@@ -42,7 +42,15 @@ data AgdaSettings = AgdaSettings
 
 data LeanSettings = LeanSettings
   { projectDir :: !FilePath
-  , external   :: !ExternalInterpreterSettings
+  , externalLean   :: !ExternalInterpreterSettings
+  } deriving (Generic, FromDhall)
+
+data ArendSettings = ArendSettings
+  { arendRootProjectDir :: !FilePath
+  , arendYamlFilename :: !FilePath
+  , arendYamlContent :: !Text
+  , arendModuleName :: !FilePath
+  , externalArend :: !ExternalInterpreterSettings
   } deriving (Generic, FromDhall)
 
 newtype IdrisSettings = IdrisSettings ExternalInterpreterSettings
@@ -84,7 +92,7 @@ data Limit = Limit
 
 data InterpretersSettings = InterpretersSettings
   { agda  :: !AgdaSettings
-  , arend :: !ExternalInterpreterSettings
+  , arend :: !ArendSettings
   , idris :: !IdrisSettings
   , coq   :: !ExternalInterpreterSettings
   , lean  :: !LeanSettings
@@ -110,4 +118,7 @@ instance ToInterpreterState AgdaSettings where
   getQueueSize = getQueueSize . internal
 
 instance ToInterpreterState LeanSettings where
-  getQueueSize = getQueueSize . external
+  getQueueSize = getQueueSize . externalLean
+
+instance ToInterpreterState ArendSettings where
+  getQueueSize = getQueueSize . externalArend

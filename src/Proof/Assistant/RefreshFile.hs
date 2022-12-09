@@ -1,7 +1,9 @@
 {-# LANGUAGE NamedFieldPuns #-}
+{-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE TypeApplications #-}
 module Proof.Assistant.RefreshFile where
 
+import Data.ByteString (ByteString)
 import Data.Coerce (coerce)
 import System.Directory
 import System.FilePath
@@ -12,6 +14,7 @@ import Proof.Assistant.Request
 import Proof.Assistant.Settings
 
 import qualified Data.ByteString.Char8 as BS8
+import qualified Data.Text as Text
 
 refreshTmpFile
   :: ExternalInterpreterSettings
@@ -35,9 +38,17 @@ getTempFilePath :: ExternalInterpreterSettings -> InterpreterRequest -> FilePath
 getTempFilePath
   ExternalInterpreterSettings{tempFilePrefix, fileExtension}
   InterpreterRequest{interpreterRequestTelegramChatId} dir =
-    let chatIdToString = show . coerce @_ @Integer
-        tmpFilepath = dir
+    let tmpFilepath = dir
           </> tempFilePrefix
           <> chatIdToString interpreterRequestTelegramChatId
           <.> fileExtension
     in tmpFilepath
+
+chatIdToString :: ChatId -> String
+chatIdToString = show . coerce @_ @Integer
+
+validate :: FilePath -> ByteString -> ByteString
+validate path bs = textToBS (Text.replace textPath "<bot>" txt)
+  where
+    textPath = Text.pack path
+    txt = bsToText bs

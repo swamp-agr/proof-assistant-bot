@@ -26,7 +26,14 @@ let InternalSettings =
 let AgdaSettings = { internal : InternalSettings }
 let LeanSettings =
       { projectDir : Text
-      , external : ExternalSettings
+      , externalLean : ExternalSettings
+      }
+let ArendSettings =
+      { arendRootProjectDir : Text
+      , arendYamlFilename : Text
+      , arendYamlContent : Text
+      , arendModuleName : Text
+      , externalArend : ExternalSettings
       }
 let defaultResource =
       { totalMemory = { soft = 5, hard = 10 }
@@ -65,7 +72,7 @@ let idrisSettings = emptyExternalSettings //
       , tempFilePrefix = "idris"
       , fileExtension = "idr"
       }
-let leanSettings = { external = emptyExternalSettings //
+let leanSettings = { externalLean = emptyExternalSettings //
                        { args = ["--profile"] : List Text
                        , executable = env:LEAN_BIN_PATH as Text
                        , tempFilePrefix = "lean"
@@ -74,11 +81,27 @@ let leanSettings = { external = emptyExternalSettings //
                        }
                    , projectDir = env:LEAN_PROJECT_PATH as Text
                    }
+let _arendLibDir = env:AREND_STDLIB_PATH as Text
+let _arendRootProjectDir = env:AREND_ROOT_PROJECT_DIR as Text
+let _arendJar = env:AREND_PATH as Text
+let _javaHome = env:JAVA_HOME as Text
+let arendSettings = { arendRootProjectDir = _arendRootProjectDir
+                    , arendYamlFilename = "arend.yaml"
+                    , arendYamlContent = "dependencies: [arend-lib]"
+                    , arendModuleName = "Main"
+                    , externalArend = emptyExternalSettings //
+                        { args = ["-jar", "${_arendJar}", "-larend-lib", "-L${_arendLibDir}/libs"]
+                        , executable = "${_javaHome}/bin/java"
+                        , tempFilePrefix = "arend"
+                        , fileExtension = "ard"
+                        , time = 60
+                        }
+                    }
 let Settings = { botName : Text
                , allowedCommands : List Text
                , botToken : Text
                , interpretersSettings : { agda : AgdaSettings
-                                        , arend : ExternalSettings 
+                                        , arend : ArendSettings
                                         , idris : ExternalSettings 
                                         , coq : ExternalSettings 
                                         , lean : LeanSettings 
@@ -93,7 +116,7 @@ let interpreterSettings =
                , sourceFileExtension = "agda"
                }
           }
-      , arend = emptyExternalSettings
+      , arend = arendSettings
       , idris = idrisSettings
       , coq = coqSettings
       , lean = leanSettings

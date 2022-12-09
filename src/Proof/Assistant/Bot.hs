@@ -40,6 +40,7 @@ updateToAction BotState{..} update
   | isCommand "agda" update = Call <$> Just Agda <*> updateToRequest update
   | isCommand "idris2" update = Call <$> Just Idris <*> updateToRequest update
   | isCommand "lean" update = Call <$> Just Lean <*> updateToRequest update
+  | isCommand "arend" update = Call <$> Just Arend <*> updateToRequest update
   | otherwise = Just $ Debug $ show update
   where
     updateToRequest upd =

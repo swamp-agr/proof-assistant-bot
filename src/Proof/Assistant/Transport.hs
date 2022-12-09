@@ -16,7 +16,7 @@ import qualified Proof.Assistant.Settings as Settings
 
 data Interpreters = Interpreters
   { agda  :: !AgdaState
-  , arend :: !ExternalState
+  , arend :: !(InterpreterState ArendSettings)
   , idris :: !(InterpreterState IdrisSettings)
   , coq   :: !ExternalState
   , lean  :: !(InterpreterState LeanSettings)
