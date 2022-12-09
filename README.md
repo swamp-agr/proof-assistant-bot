@@ -115,6 +115,31 @@ export LEAN_BIN_PATH="$HOME/.nix-profile/bin/lean"
 
 6. Set `LEAN_PROJECT_PATH` to the newly created project directory.
 
+### Arend
+
+1. Get `nix` from [nixos.org](https://nixos.org/download.html#download-nix).
+
+2. Get `java` and `openjdk17` via `nix`:
+
+```bash
+nix-env -i openjdk-17.0.4+8
+```
+
+3. Set `JAVA_HOME` environment variable to your openjdk location. You can use `readlink $HOME/.nix-profile/bin/java` and strip `/bin/java` from the end.
+
+4. Create project directory to store arend projects (for different Telegram chats) 
+and set `AREND_ROOT_PROJECT_DIR`.
+
+5. Get Arend standard library from [the official site](https://arend-lang.github.io/download#standard-library) and store in `${AREND_ROOT_PROJECT_DIR}/libs`.
+
+6. Point `AREND_STDLIB_PATH` environment variable to the same location as `AREND_ROOT_PROJECT_DIR`.
+
+7. Download [`Arend.jar`](https://github.com/JetBrains/Arend/releases/latest/download/Arend.jar) and set `AREND_PATH` environment variable to its location, e.g.
+
+```bash
+export AREND_PATH="${AREND_ROOT_PROJECT_DIR}/Arend.jar"
+```
+
 ## Usage
 
 ## Available instances
