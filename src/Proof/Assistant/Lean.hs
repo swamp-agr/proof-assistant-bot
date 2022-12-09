@@ -16,6 +16,8 @@ import Proof.Assistant.ResourceLimit
 import Proof.Assistant.Settings
 import Proof.Assistant.State
 
+import qualified Data.Text as Text
+
 callLean :: InterpreterState LeanSettings -> InterpreterRequest -> IO ByteString
 callLean InterpreterState{..} ir = do
   let LeanSettings{..} = coerce settings
@@ -26,12 +28,16 @@ callLean InterpreterState{..} ir = do
         runProcess = readProcessWithExitCode (t2s executable) fullArgs ""
         asyncExecutable = do
           setPriority priority
-          (exitCode, stdout, stderr) <- runProcess
-          let response = unlines [stdout, stderr]
-          putStrLn $ show exitCode <> " " <> response
-          pure $ toBS response
+          (_exitCode, stdout, stderr) <- runProcess
+          pure . validate path . toBS . unlines $ [stdout, stderr]
         asyncTimer = asyncWait time
     eresult <- race asyncTimer asyncExecutable
     case eresult of
       Left ()  -> pure "Time limit exceeded"
       Right bs -> pure bs
+
+validate :: FilePath -> ByteString -> ByteString
+validate path bs = textToBS (Text.replace textPath "<bot>" txt)
+  where
+    textPath = Text.pack path
+    txt = bsToText bs
