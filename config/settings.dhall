@@ -86,6 +86,7 @@ let agdaSettings =
       { internal = emptyInternalSettings //
           { sourceFilePrefix = "agda"
           , sourceFileExtension = "agda"
+          , timeout = 60
           }
       }
 let rzkSettings = emptyInternalSettings // { timeout = 60 }
