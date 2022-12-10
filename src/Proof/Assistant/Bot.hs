@@ -71,23 +71,23 @@ handleAction (Call backend request) model = model <# do
       Idris -> handle idris
       Lean -> handle lean
       Rzk -> handle rzk
-handleAction (SendBack response) model = model <# sendResponseBack response
+handleAction (SendBack response) model = model <# sendResponseBack True response
 
 handleAction (Help req) model = model <# do
   let BotState {..} = model
       Settings{..} = botSettings
   case HashMap.lookup (decodeUtf8 $ interpreterRequestMessage req) helpMessages of
-    Nothing -> sendResponseBack $ makeTelegramResponse req (encodeUtf8 help) 
+    Nothing -> sendResponseBack False $ makeTelegramResponse req (encodeUtf8 help) 
     Just helpMessage -> replyText helpMessage
 handleAction (Version req) model = model <# do
   let BotState {..} = model
       Settings{..} = botSettings
-  sendResponseBack $ makeTelegramResponse req (encodeUtf8 $ makeVersion version)
+  sendResponseBack False $ makeTelegramResponse req (encodeUtf8 $ makeVersion version)
 handleAction (Debug str) model = model <# (liftIO $ putStrLn str)
 
-sendResponseBack :: InterpreterResponse -> BotM ()
-sendResponseBack response =
-  let req = toSendMessageRequest response
+sendResponseBack :: Bool -> InterpreterResponse -> BotM ()
+sendResponseBack isMonospace response =
+  let req = toSendMessageRequest isMonospace response
       waitAndRetry result = if responseOk result
         then pure ()
         else case responseParameters result >>= responseParametersRetryAfter of
