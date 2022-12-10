@@ -138,6 +138,8 @@ in
 , outputSize = 1000000
 , help =
     ''
+    Proof Assistant Help:
+
     /help - display this message.
 
     /coq <input> - typecheck your input.
