@@ -7,6 +7,7 @@ import Agda.Interaction.Imports
   )
 import Agda.Interaction.FindFile (SourceFile (..))
 import Agda.Interaction.Options (optOnlyScopeChecking)
+import Agda.Syntax.Translation.ConcreteToAbstract (importPrimitives)
 import Agda.TypeChecking.Errors (applyFlagsToTCWarnings, prettyError)
 import Agda.TypeChecking.Monad.Base
   (ModuleCheckMode (..), TypeError (..), TCM, commandLineOptions, iInsideScope, typeError)
@@ -23,6 +24,7 @@ reload Nothing = pure "Failed to type check."
 reload (Just file) = do
   checked <- checkFile file
   setScope $ iInsideScope (crInterface checked)
+  _ <- importPrimitives
   pure "Type checked succesfully."
   `catchError` \e -> do
     s <- prettyError e

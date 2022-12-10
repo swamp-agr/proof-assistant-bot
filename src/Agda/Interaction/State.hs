@@ -3,6 +3,7 @@
 module Agda.Interaction.State where
 
 import Agda.Interaction.Options
+import Agda.Syntax.Translation.ConcreteToAbstract (importPrimitives)
 import Agda.TypeChecking.Errors (prettyError)
 import Agda.TypeChecking.Monad.Base
 import Agda.TypeChecking.Monad.Options (setCommandLineOptions)
@@ -29,7 +30,8 @@ newAgdaState settings = do
   tmpDir <- getTemporaryDirectory
   (_, state1) <- withCurrentDirectory tmpDir
     $ runTCM env state0
-    $ setCommandLineOptions defaultOptions
+    $ setCommandLineOptions defaultOptions >> importPrimitives
+    
   agdaStateRef <- newIORef state1
   agdaEnvRef <- newIORef env
   pure AgdaState {..}
