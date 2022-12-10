@@ -26,8 +26,10 @@ import Agda.Interaction.State
 import Proof.Assistant.Agda
 import Proof.Assistant.Arend
 import Proof.Assistant.Idris
-import Proof.Assistant.Helpers
 import Proof.Assistant.Lean
+import Proof.Assistant.Rzk
+
+import Proof.Assistant.Helpers
 import Proof.Assistant.Request
 import Proof.Assistant.RefreshFile
 import Proof.Assistant.ResourceLimit
@@ -48,7 +50,7 @@ class Interpreter state settings | state -> settings where
   getSettings :: state -> InterpreterState settings
 
 instance Interpreter InternalState InternalInterpreterSettings  where
-  interpretSafe _ _ = pure "TBD"
+  interpretSafe state request = callRzk state request
   getSettings = id
 
 instance Interpreter AgdaState AgdaSettings where

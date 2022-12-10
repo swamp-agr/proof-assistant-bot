@@ -25,6 +25,7 @@ library
                     , filepath
                     , mtl
                     , process
+                    , rzk
                     , stm
                     , telegram-bot-simple >= 0.5.2
                     , text
@@ -43,6 +44,7 @@ library
                     , Proof.Assistant.Request
                     , Proof.Assistant.ResourceLimit
                     , Proof.Assistant.Response
+                    , Proof.Assistant.Rzk
                     , Proof.Assistant.State
                     , Proof.Assistant.Settings
                     , Proof.Assistant.Transport
