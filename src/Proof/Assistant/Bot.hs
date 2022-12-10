@@ -78,7 +78,8 @@ handleAction (Help req) model = model <# do
       Settings{..} = botSettings
   case HashMap.lookup (decodeUtf8 $ interpreterRequestMessage req) helpMessages of
     Nothing -> sendResponseBack False $ makeTelegramResponse req (encodeUtf8 help) 
-    Just helpMessage -> replyText helpMessage
+    Just helpMessage -> sendResponseBack False
+      $ makeTelegramResponse req (encodeUtf8 helpMessage)
 handleAction (Version req) model = model <# do
   let BotState {..} = model
       Settings{..} = botSettings
