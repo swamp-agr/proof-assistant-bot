@@ -8,10 +8,13 @@ import Control.Monad (forever, void)
 import Control.Monad.IO.Class (liftIO)
 import Data.Coerce (coerce)
 import Data.Maybe (isJust)
+import Data.Text (Text)
 import Data.Text.Encoding (encodeUtf8)
 import Telegram.Bot.API
 import Telegram.Bot.Simple
 import Telegram.Bot.Simple.UpdateParser
+
+import qualified Data.HashMap.Strict as HashMap
 
 import Proof.Assistant.Interpreter
 import Proof.Assistant.Request
@@ -19,10 +22,13 @@ import Proof.Assistant.Response
 import Proof.Assistant.Settings
 import Agda.Interaction.State
 import Proof.Assistant.Transport
+import Proof.Assistant.Version
 
 type Model = BotState
 
-data Action = Call Backend InterpreterRequest | SendBack InterpreterResponse | Debug String
+data Action
+  = Call Backend InterpreterRequest | SendBack InterpreterResponse | Debug String
+  | Help Text | Version
 
 data Backend = Agda | Arend | Idris | Coq | Lean | Rzk
 
@@ -36,12 +42,16 @@ proofAssistantBot state = BotApp
 
 updateToAction :: Model -> Update -> Maybe Action
 updateToAction BotState{..} update
+  -- interpreters
   | isCommand "coq" update = Call <$> Just Coq <*> updateToRequest update
   | isCommand "agda" update = Call <$> Just Agda <*> updateToRequest update
   | isCommand "idris2" update = Call <$> Just Idris <*> updateToRequest update
   | isCommand "lean" update = Call <$> Just Lean <*> updateToRequest update
   | isCommand "arend" update = Call <$> Just Arend <*> updateToRequest update
   | isCommand "rzk" update = Call <$> Just Rzk <*> updateToRequest update
+  -- other
+  | isCommand "help" update = Help <$> updateMessageText update
+  | isCommand "version" update = Just Version
   | otherwise = Just $ Debug $ show update
   where
     updateToRequest upd =
@@ -78,6 +88,16 @@ handleAction (SendBack response) model = model <# do
   liftClientM $ do
     result <- sendMessage req
     waitAndRetry result
+handleAction (Help txt) model = model <# do
+  let BotState {..} = model
+      Settings{..} = botSettings
+  case HashMap.lookup txt helpMessages of
+    Nothing -> replyText help
+    Just helpMessage -> replyText helpMessage
+handleAction Version model = model <# do
+  let BotState {..} = model
+      Settings{..} = botSettings
+  replyText $ makeVersion version
 handleAction (Debug str) model = model <# (liftIO $ putStrLn str)
 
 runTelegramBot :: Model -> IO ()

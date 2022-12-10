@@ -24,12 +24,11 @@ callIdris2 InterpreterState{..} ir@InterpreterRequest{..}
         action <- chooseCommand s ir ecmd request
         let asyncExecutable = do
               setPriority priority
-              (exitCode, stdout, stderr) <- action
+              (_exitCode, stdout, stderr) <- action
               let response = unlines [if stdout == "\n" then "Done." else stdout, stderr]
-              putStrLn $ show exitCode <> " " <> response
               pure $ toBS response
             asyncTimer = asyncWait time
-        eresult <- race asyncTimer asyncExecutable
+        eresult <- race asyncTimer (handleErrorMaybe asyncExecutable)
         case eresult of
           Left ()  -> pure "Time limit exceeded"
           Right bs -> pure bs

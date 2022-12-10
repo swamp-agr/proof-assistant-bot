@@ -85,11 +85,10 @@ callExternalInterpreter ExternalInterpreterSettings{..} (dir, path)
       contents <- readFile path
       let asyncExecutable = do
             setPriority priority
-            (exitCode, stdout, stderr) <- readProcessWithExitCode (t2s executable) (unpack <$> coerce args) contents
-            putStrLn $ show exitCode <> " " <> stderr
+            (_exitCode, stdout, stderr) <- readProcessWithExitCode (t2s executable) (unpack <$> coerce args) contents
             pure $ toBS $ unlines [stdout, stderr]
           asyncTimer = asyncWait time
-      eresult <- race asyncTimer asyncExecutable
+      eresult <- race asyncTimer (handleErrorMaybe asyncExecutable)
       case eresult of
         Left ()  -> pure "Time limit exceeded"
         Right bs -> pure bs

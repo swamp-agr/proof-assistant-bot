@@ -7,7 +7,6 @@
 module Proof.Assistant.Agda where
 
 import Control.Concurrent.Async
-import Control.Exception
 import Data.ByteString (ByteString)
 import Data.Coerce
 import System.Directory (getTemporaryDirectory)
@@ -34,10 +33,8 @@ callAgda currentAgdaState@AgdaState{..} InterpreterRequest{..} = do
         setAllocationCounter (fromIntegral allocations)
         interpretAgda currentAgdaState interpreterRequestMessage
 
-      catchAsyncApi :: SomeException -> IO ByteString
-      catchAsyncApi (SomeException ex) = pure (BS8.pack $ show ex)
       asyncTimer = asyncWait (coerce timeout)
-  eresult <- race asyncTimer (asyncApi `catch` catchAsyncApi)
+  eresult <- race asyncTimer (handleErrorMaybe asyncApi)
   case eresult of
     Left () -> pure "Time limit exceeded"
     Right result -> pure result

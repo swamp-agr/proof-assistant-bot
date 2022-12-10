@@ -35,19 +35,21 @@ library
                     , Agda
     exposed-modules:  Proof.Assistant.Agda
                     , Proof.Assistant.Arend
+                    , Proof.Assistant.Idris
+                    , Proof.Assistant.Lean
+                    , Proof.Assistant.Rzk
+
                     , Proof.Assistant.Bot
                     , Proof.Assistant.Helpers
-                    , Proof.Assistant.Idris
                     , Proof.Assistant.Interpreter
-                    , Proof.Assistant.Lean
                     , Proof.Assistant.RefreshFile
                     , Proof.Assistant.Request
                     , Proof.Assistant.ResourceLimit
                     , Proof.Assistant.Response
-                    , Proof.Assistant.Rzk
                     , Proof.Assistant.State
                     , Proof.Assistant.Settings
                     , Proof.Assistant.Transport
+                    , Proof.Assistant.Version
 
                     , Agda.Interaction.Command
                     , Agda.Interaction.Command.EvalIn
@@ -66,6 +68,10 @@ library
                     , Agda.Interaction.State
 
                     , Idris.Interaction.Command
+    autogen-modules:
+        Paths_proof_assistant_bot
+    other-modules:
+        Paths_proof_assistant_bot
 
 executable proof-assistant-bot
     main-is:          Main.hs

@@ -33,7 +33,7 @@ callArend InterpreterState{..} ir = do
           (_exitCode, stdout, stderr) <- runProcess
           pure . validate currentProjectDir . toBS . unlines $ [stdout, stderr]
         asyncTimer = asyncWait time
-    eresult <- race asyncTimer asyncExecutable
+    eresult <- race asyncTimer (handleErrorMaybe asyncExecutable)
     case eresult of
       Left ()  -> pure "Time limit exceeded"
       Right bs -> pure bs
