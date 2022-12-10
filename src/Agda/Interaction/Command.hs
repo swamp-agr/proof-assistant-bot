@@ -29,11 +29,13 @@ import Agda.Utils.FileName (AbsolutePath, filePath)
 import qualified Data.ByteString.Char8 as BS8
 import qualified Data.HashMap.Strict as HashMap
 
+-- | Supported sub-commands for Agda.
 data AgdaCommand
   = Reload | Help | Constraints | Context | Give | Refine | Meta | Load
   | Eval | TypeOf | TypeIn | WakeUp | Scope
   deriving (Eq, Show, Generic)
 
+-- | Map of supported Agda sub-commands. We use it instead of parser.
 supportedCommands :: HashMap ByteString AgdaCommand
 supportedCommands = HashMap.fromList
   [ (,) "/reload" Reload
@@ -50,10 +52,12 @@ supportedCommands = HashMap.fromList
   , (,) "/wakeup" WakeUp
   , (,) "/scope" Scope
   ]
-  
+
+-- | Check user input to identify 'AgdaCommand'.
 matchSupported :: ByteString -> Maybe AgdaCommand
 matchSupported = (`HashMap.lookup` supportedCommands)
 
+-- | Choose an action based on either 'AgdaCommand' or raw input.
 chooseCommand :: AgdaState -> Either () AgdaCommand -> ByteString -> IO (TCM ByteString)
 chooseCommand _state (Left _) input = pure (evalTerm input)
 chooseCommand state (Right cmd) input = do
@@ -83,6 +87,7 @@ chooseCommand state (Right cmd) input = do
       , "is not supported yet."
       ]
 
+-- | Store raw user input in the file given by 'TCEnv'.
 storeRequestContent :: AbsolutePath -> ByteString -> IO ()
 storeRequestContent absFilepath content = do
   let moduleName = (BS8.pack . dropExtension . takeFileName . filePath) absFilepath

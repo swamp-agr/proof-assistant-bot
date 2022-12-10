@@ -1,7 +1,6 @@
 let Limit = { soft : Natural, hard : Natural }
 let ExternalSettings =
       { args : List Text
-      , packages : Text
       , executable : Text
       , time : Natural
       , priority : Natural
@@ -44,7 +43,6 @@ let defaultResource =
       }
 let emptyExternalSettings =
       { args = [] : List Text
-      , packages = ""
       , executable = ""
       , time = 5
       , priority = 20
@@ -107,7 +105,6 @@ let arendSettings = { arendRootProjectDir = _arendRootProjectDir
                         }
                     }
 let Settings = { botName : Text
-               , allowedCommands : List Text
                , botToken : Text
                , interpretersSettings : { agda : AgdaSettings
                                         , arend : ArendSettings
@@ -133,8 +130,6 @@ let interpreterSettings =
 in
 
 { botName = "ProofAssistantBot"
-, allowedCommands =
-    [ "/coq", "coq" ]
 , botToken = env:PROOF_ASSISTANT_BOT_TOKEN as Text
 , outputSize = 1000000
 , help =
