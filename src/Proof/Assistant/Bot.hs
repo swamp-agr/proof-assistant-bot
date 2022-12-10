@@ -8,8 +8,8 @@ import Control.Monad (forever, void)
 import Control.Monad.IO.Class (liftIO)
 import Data.Coerce (coerce)
 import Data.Maybe (isJust)
-import Data.Text (Text)
-import Data.Text.Encoding (encodeUtf8)
+import Data.Text.Encoding (decodeUtf8, encodeUtf8)
+
 import Telegram.Bot.API
 import Telegram.Bot.Simple
 import Telegram.Bot.Simple.UpdateParser
@@ -28,7 +28,7 @@ type Model = BotState
 
 data Action
   = Call Backend InterpreterRequest | SendBack InterpreterResponse | Debug String
-  | Help Text | Version
+  | Help InterpreterRequest | Version InterpreterRequest
 
 data Backend = Agda | Arend | Idris | Coq | Lean | Rzk
 
@@ -50,15 +50,10 @@ updateToAction BotState{..} update
   | isCommand "arend" update = Call <$> Just Arend <*> updateToRequest update
   | isCommand "rzk" update = Call <$> Just Rzk <*> updateToRequest update
   -- other
-  | isCommand "help" update = Help <$> updateMessageText update
-  | isCommand "version" update = Just Version
+  | isCommand "help" update = Help <$> updateToRequest update
+  | isCommand "version" update = Version <$> updateToRequest update
   | otherwise = Just $ Debug $ show update
   where
-    updateToRequest upd =
-      InterpreterRequest
-        <$> updateChatId upd  -- chatId
-        <*> (fmap messageMessageId . extractUpdateMessage) upd -- messageId
-        <*> (encodeUtf8 <$> updateMessageText upd)
     Settings{..} = botSettings
     isCommand cmd = isJust . parseUpdate (commandWithBotName botName cmd)
 
@@ -76,7 +71,22 @@ handleAction (Call backend request) model = model <# do
       Idris -> handle idris
       Lean -> handle lean
       Rzk -> handle rzk
-handleAction (SendBack response) model = model <# do
+handleAction (SendBack response) model = model <# sendResponseBack response
+
+handleAction (Help req) model = model <# do
+  let BotState {..} = model
+      Settings{..} = botSettings
+  case HashMap.lookup (decodeUtf8 $ interpreterRequestMessage req) helpMessages of
+    Nothing -> sendResponseBack $ makeTelegramResponse req (encodeUtf8 help) 
+    Just helpMessage -> replyText helpMessage
+handleAction (Version req) model = model <# do
+  let BotState {..} = model
+      Settings{..} = botSettings
+  sendResponseBack $ makeTelegramResponse req (encodeUtf8 $ makeVersion version)
+handleAction (Debug str) model = model <# (liftIO $ putStrLn str)
+
+sendResponseBack :: InterpreterResponse -> BotM ()
+sendResponseBack response =
   let req = toSendMessageRequest response
       waitAndRetry result = if responseOk result
         then pure ()
@@ -85,20 +95,9 @@ handleAction (SendBack response) model = model <# do
                Just sec -> do
                  liftIO . threadDelay $ coerce sec * 1000000
                  void (sendMessage req)
-  liftClientM $ do
+  in liftClientM $ do
     result <- sendMessage req
     waitAndRetry result
-handleAction (Help txt) model = model <# do
-  let BotState {..} = model
-      Settings{..} = botSettings
-  case HashMap.lookup txt helpMessages of
-    Nothing -> replyText help
-    Just helpMessage -> replyText helpMessage
-handleAction Version model = model <# do
-  let BotState {..} = model
-      Settings{..} = botSettings
-  replyText $ makeVersion version
-handleAction (Debug str) model = model <# (liftIO $ putStrLn str)
 
 runTelegramBot :: Model -> IO ()
 runTelegramBot state@BotState{..} = do
@@ -121,3 +120,4 @@ runTelegramBot state@BotState{..} = do
 
 run :: IO ()
 run = runTelegramBot =<< newBotState =<< loadDefaultSettings
+
