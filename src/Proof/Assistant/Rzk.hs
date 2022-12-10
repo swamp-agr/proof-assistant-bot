@@ -14,6 +14,7 @@ import Proof.Assistant.Request
 import Proof.Assistant.Settings
 import Proof.Assistant.State
 
+-- | Call Polilyngual API. Rzk will do all the job and return response or an error as result.
 callRzk :: InterpreterState InternalInterpreterSettings -> InterpreterRequest -> IO ByteString
 callRzk InterpreterState{..} ir = do
   let InternalInterpreterSettings{..} = settings

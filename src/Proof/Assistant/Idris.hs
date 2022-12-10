@@ -15,6 +15,8 @@ import Proof.Assistant.State
 
 import qualified Data.ByteString.Char8 as BS8
 
+-- | Call Idris 2 as CLI application.
+-- It prepares the CLI command, executes it and waits for response.
 callIdris2 :: InterpreterState IdrisSettings -> InterpreterRequest -> IO ByteString
 callIdris2 InterpreterState{..} ir@InterpreterRequest{..}
   = case parseRequest interpreterRequestMessage of
@@ -33,6 +35,8 @@ callIdris2 InterpreterState{..} ir@InterpreterRequest{..}
           Left ()  -> pure "Time limit exceeded"
           Right bs -> pure bs
 
+-- | Parse command. It could be unknown command or 'IdrisCommand' sub-command with its arguments
+-- or even expression to evaluate.
 parseRequest :: ByteString -> Either ByteString (Either () IdrisCommand, ByteString)
 parseRequest rawCmd = case BS8.words rawSubCommand of
   [] -> Left "empty command"

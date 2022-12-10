@@ -9,12 +9,18 @@ import Telegram.Bot.API
 
 import Proof.Assistant.Request
 
+-- | Response for Telegram.
 data InterpreterResponse = InterpreterResponse
-  { interpreterResponseTelegramChatId :: !ChatId
-  , interpreterResponseTelegramMessageId :: !MessageId
-  , interpreterResponseResponse :: !ByteString
+  { interpreterResponseTelegramChatId :: !ChatId -- ^ Telegram ChatId (for reply).
+  , interpreterResponseTelegramMessageId :: !MessageId -- ^ Telegram MessageId (for reply).
+  , interpreterResponseResponse :: !ByteString -- ^ output data.
   }
 
+-- | Cast 'InterpreterResponse' to 'SendMessageRequest'.
+-- If first argument is 'True'
+-- then it will wrap message in Monospace font and mark it with @MarkdownV2@ parse mode.
+-- Otherwise, text message will be sent.
+-- For all responses from Backends 'True' should be specified.
 toSendMessageRequest :: Bool -> InterpreterResponse -> SendMessageRequest
 toSendMessageRequest isMonospace InterpreterResponse{..} = SendMessageRequest
   { sendMessageChatId                   = SomeChatId interpreterResponseTelegramChatId
@@ -32,6 +38,7 @@ toSendMessageRequest isMonospace InterpreterResponse{..} = SendMessageRequest
   , sendMessageReplyMarkup              = Nothing
   }
 
+-- | Cast 'InterpreterRequest' and output data to 'InterpreterResponse'.
 makeTelegramResponse :: InterpreterRequest -> ByteString -> InterpreterResponse
 makeTelegramResponse InterpreterRequest{..} response =
   InterpreterResponse

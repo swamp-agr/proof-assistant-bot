@@ -369,7 +369,7 @@ Proof. simpl. reflexivity. Qed.
 
 ## Acknowledgements
 
-- PLT Community
+- PLTT Community
 - Nikolay Kudasov
 - Andrey Borzenkov
 - Matúš Tejiščák

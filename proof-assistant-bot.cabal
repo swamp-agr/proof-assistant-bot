@@ -1,17 +1,22 @@
 cabal-version:      2.4
 name:               proof-assistant-bot
-version:            0.1.0
+version:            0.2.0
 synopsis:           Telegram bot for proof assistants
--- description:
--- category:        
--- homepage:
--- bug-reports:        
+description:        Bridge between Telegram Bot and several proof assistants.
+                    .
+                    Currently following proof assistant supported: Agda, Arend, Coq, Idris 2, Lean, Rzk
+                    .
+                    See README.md for more details.
+category:           Dependent types
+homepage:           https://github.com/swamp-agr/proof-assistant-bot/
+bug-reports:        https://github.com/swamp-agr/proof-assistant-bot/issues
 license:            MIT
 license-file:       LICENSE                    
 author:             Andrey Prokopenko
 maintainer:         persiantiger@yandex.ru
 
 extra-source-files: CHANGELOG.md
+                    README.md
 
 library
     hs-source-dirs:   src

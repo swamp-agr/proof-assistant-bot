@@ -38,6 +38,8 @@ import Proof.Assistant.Settings
 import Proof.Assistant.State
 import Proof.Assistant.Transport
 
+-- | Main worker function. Reads input from Telegram, calls CLI or API, could be anything.
+-- Returns 'ByteString', wraps it in 'InterpreterResponse' and sends back to Telegram.
 runInterpreter :: (Interpreter state settings) => BotState -> state -> IO ()
 runInterpreter botState is = forever $ do
   incomingMessage <- readInput (getSettings is)
@@ -45,6 +47,9 @@ runInterpreter botState is = forever $ do
   let telegramResponse = makeTelegramResponse incomingMessage response
   writeOutput telegramResponse botState
 
+-- | Worker abstraction over Proof assistant as Interpreter.
+-- Could be CLI, Haskell function, network, whatever.
+-- It should have the @state@ and associated @settings@ with the @state@.
 class Interpreter state settings | state -> settings where
   interpretSafe :: state -> InterpreterRequest -> IO ByteString
   getSettings :: state -> InterpreterState settings
@@ -78,6 +83,7 @@ instance Interpreter (InterpreterState ArendSettings) ArendSettings where
 
 -- ** External Interpreter
 
+-- | Call some external CLI application, probably Coq.
 callExternalInterpreter
   :: ExternalInterpreterSettings -> (FilePath, FilePath) -> IO ByteString
 callExternalInterpreter ExternalInterpreterSettings{..} (dir, path)
