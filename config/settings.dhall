@@ -72,15 +72,23 @@ let idrisSettings = emptyExternalSettings //
       , tempFilePrefix = "idris"
       , fileExtension = "idr"
       }
-let leanSettings = { externalLean = emptyExternalSettings //
-                       { args = ["--profile"] : List Text
-                       , executable = env:LEAN_BIN_PATH as Text
-                       , tempFilePrefix = "lean"
-                       , fileExtension = "lean"
-                       , time = 10
-                       }
-                   , projectDir = env:LEAN_PROJECT_PATH as Text
-                   }
+let leanSettings =
+      { externalLean = emptyExternalSettings //
+          { args = ["--profile"] : List Text
+          , executable = env:LEAN_BIN_PATH as Text
+          , tempFilePrefix = "lean"
+          , fileExtension = "lean"
+          , time = 10
+          }
+      , projectDir = env:LEAN_PROJECT_PATH as Text
+      }
+let agdaSettings =
+      { internal = emptyInternalSettings //
+          { sourceFilePrefix = "agda"
+          , sourceFileExtension = "agda"
+          }
+      }
+let rzkSettings = emptyInternalSettings // { timeout = 60 }
 let _arendLibDir = env:AREND_STDLIB_PATH as Text
 let _arendRootProjectDir = env:AREND_ROOT_PROJECT_DIR as Text
 let _arendJar = env:AREND_PATH as Text
@@ -110,17 +118,12 @@ let Settings = { botName : Text
                , outputSize : Natural
                }
 let interpreterSettings =
-      { agda =
-          { internal = emptyInternalSettings
-            // { sourceFilePrefix = "agda"
-               , sourceFileExtension = "agda"
-               }
-          }
+      { agda = agdaSettings          
       , arend = arendSettings
       , idris = idrisSettings
       , coq = coqSettings
       , lean = leanSettings
-      , rzk  = emptyInternalSettings
+      , rzk  = rzkSettings
       }
 
 in

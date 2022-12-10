@@ -39,6 +39,9 @@ dropSubCommand = dropCommand . dropCommand
 toBS :: String -> ByteString
 toBS = Text.encodeUtf8 . Text.pack
 
+fromBS :: ByteString -> String
+fromBS = Text.unpack . Text.decodeUtf8
+
 bsToText :: ByteString -> Text
 bsToText = Text.decodeUtf8
 

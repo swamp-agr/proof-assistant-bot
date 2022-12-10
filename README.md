@@ -140,6 +140,10 @@ and set `AREND_ROOT_PROJECT_DIR`.
 export AREND_PATH="${AREND_ROOT_PROJECT_DIR}/Arend.jar"
 ```
 
+### Rzk
+
+No actions required. See `cabal.project` for more details.
+
 ## Usage
 
 ## Available instances

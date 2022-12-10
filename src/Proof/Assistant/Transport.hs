@@ -37,6 +37,8 @@ type ExternalState = InterpreterState ExternalInterpreterSettings
 
 type InternalState = InterpreterState InternalInterpreterSettings
 
+newtype RzkState = RzkState InternalState
+
 data ChatInfo = ChatInfo
   { filePrefix      :: !FilePath
   , sourceDirectory :: !FilePath
