@@ -15,11 +15,13 @@ data InterpreterResponse = InterpreterResponse
   , interpreterResponseResponse :: !ByteString
   }
 
-toSendMessageRequest :: InterpreterResponse -> SendMessageRequest
-toSendMessageRequest InterpreterResponse{..} = SendMessageRequest
-  { sendMessageChatId                = SomeChatId interpreterResponseTelegramChatId
+toSendMessageRequest :: Bool -> InterpreterResponse -> SendMessageRequest
+toSendMessageRequest isMonospace InterpreterResponse{..} = SendMessageRequest
+  { sendMessageChatId                   = SomeChatId interpreterResponseTelegramChatId
   , sendMessageText
-      = "```\n" <> decodeUtf8 interpreterResponseResponse <> "\n```\n"
+      = if isMonospace
+        then "```\n" <> decodeUtf8 interpreterResponseResponse <> "\n```\n"
+        else decodeUtf8 interpreterResponseResponse
   , sendMessageParseMode                = Just MarkdownV2
   , sendMessageEntities                 = Nothing
   , sendMessageDisableWebPagePreview    = Nothing
