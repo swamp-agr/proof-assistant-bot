@@ -21,8 +21,8 @@ toSendMessageRequest isMonospace InterpreterResponse{..} = SendMessageRequest
   , sendMessageText
       = if isMonospace
         then "```\n" <> decodeUtf8 interpreterResponseResponse <> "\n```\n"
-        else decodeUtf8 interpreterResponseResponse
-  , sendMessageParseMode                = Just MarkdownV2
+        else decodeUtf8 interpreterResponseResponse <> "\n"
+  , sendMessageParseMode                = if isMonospace then Just MarkdownV2 else Nothing
   , sendMessageEntities                 = Nothing
   , sendMessageDisableWebPagePreview    = Nothing
   , sendMessageDisableNotification      = Nothing
