@@ -6,6 +6,7 @@
 module Proof.Assistant.Helpers where
 
 import Control.Concurrent (threadDelay)
+import Control.Exception
 import Data.Coerce (Coercible, coerce)
 import Data.Char (isSpace)
 import Data.ByteString (ByteString)
@@ -47,3 +48,9 @@ bsToText = Text.decodeUtf8
 
 textToBS :: Text -> ByteString
 textToBS = toBS . t2s
+
+processError :: SomeException -> IO ByteString
+processError (SomeException ex) = pure (toBS $ show ex)
+
+handleErrorMaybe :: IO ByteString -> IO ByteString
+handleErrorMaybe = (`catch` processError)

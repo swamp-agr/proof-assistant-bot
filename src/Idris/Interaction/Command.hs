@@ -48,7 +48,7 @@ chooseCommand settings request ecmd input = case ecmd of
   Right cmd -> case cmd of
     Load -> do
       (dir, path) <- refreshTmpFile settings request Nothing
-      pure $ withCurrentDirectory dir $ runProcess settings "main" $ takeFileName path
+      pure $ withCurrentDirectory dir $ runProcess settings "main" (takeFileName path)
     TypeOf ->
       withResource settings request
         $ runProcess settings (":ti " <> BS8.unpack input) . takeFileName

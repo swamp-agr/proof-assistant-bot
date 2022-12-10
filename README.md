@@ -1,6 +1,27 @@
 # Proof Assistant Bot
 
+1. [Description](#descriprion)
+2. [Installation](#installation)
+    1. [Coq](#coq)
+    2. [Agda](#agda)
+    3. [Idris 2](#idris-2)
+    4. [Lean](#lean)
+    5. [Arend](#arend)
+    6. [Rzk](#rzk)
+3. [Usage](#usage)
+4. [Available instances](#available-instances)
+5. [Acknowledgements](#acknowledgements)
+
 ## Description
+
+This bot provides limited Telegram interfaces to following proof assistant programs (in order of implementation):
+
+- Coq
+- Agda
+- Idris 2
+- Lean
+- Arend
+- Rzk
 
 ## Installation
 
@@ -146,6 +167,210 @@ No actions required. See `cabal.project` for more details.
 
 ## Usage
 
+- Coq supports only typecheck of the user input via `/coq` command. Example:
+
+```coq
+/coq Inductive day : Type :=
+  | monday
+  | tuesday
+  | wednesday
+  | thursday
+  | friday
+  | saturday
+  | sunday.
+
+Definition next_weekday (d:day) : day :=
+  match d with
+  | monday => tuesday
+  | tuesday => wednesday
+  | wednesday => thursday
+  | thursday => friday
+  | friday => monday
+  | saturday => monday
+  | sunday => monday
+  end.
+
+Compute (next_weekday friday).
+
+Compute (next_weekday (next_weekday saturday)).
+
+Example test_next_weekday:
+  (next_weekday (next_weekday saturday)) = tuesday.
+
+Proof. simpl. reflexivity. Qed.
+```
+
+- Agda is available via `/agda` command. Bot supports several subcommands for Agda:
+    - `/agda /load <input>`. E.g. 
+
+    ```agda
+    /agda /load import Relation.Binary.PropositionalEquality as Eq
+    open Eq using (_≡_; refl)
+    open Eq.≡-Reasoning using (begin_; _≡⟨⟩_; _∎)
+    
+    data ℕ : Set where
+      zero : ℕ
+      suc  : ℕ → ℕ
+    
+    {-# BUILTIN NATURAL ℕ #-}
+    
+    _+_ : ℕ → ℕ → ℕ
+    zero + n = n
+    (suc m) + n = suc (m + n)
+    
+    _ : 2 + 3 ≡ 5
+    _ =
+      begin
+        2 + 3
+      ≡⟨⟩    -- is shorthand for
+        (suc (suc zero)) + (suc (suc (suc zero)))
+      ≡⟨⟩    -- inductive case
+        suc ((suc zero) + (suc (suc (suc zero))))
+      ≡⟨⟩    -- inductive case
+        suc (suc (zero + (suc (suc (suc zero)))))
+      ≡⟨⟩    -- base case
+        suc (suc (suc (suc (suc zero))))
+      ≡⟨⟩    -- is longhand for
+        5
+      ∎
+    ```
+
+    - `/agda /reload`
+    - `/agda /typeOf <expr>`. E.g. `/agda /typeOf suc`.
+    - `/agda <expr>`. E.g. `/agda suc zero + suc zero`.
+
+- Idris 2 via `/idris2` command. Bot supports several subcommands for Idris 2:
+    - `/idris2 /load <input>`. E.g.
+
+    ```idris
+    /idris2 /load module Main
+    
+    import System.File.ReadWrite
+    
+    tryPrint : Either FileError String -> IO ()
+    tryPrint (Left _) = putStrLn "error"
+    tryPrint (Right r) = putStrLn r
+    
+    main : IO ()
+    main = do c <- readFile "hello.idr"
+              tryPrint c
+    ```
+
+    - `/idris2 /typeOf <expr>`. E.g. `/idris2 /typeOf Nat`.
+    - `/idris2 <expr>`. E.g. `/idris2 2 + 3`.
+    
+- Lean is available via `/lean` command. Typecheck supported for the user input. Only several modes were tested (calc mode, conv mode, simplifier).
+
+    - Example 1: 
+    
+    ```lean
+    /lean import data.nat.basic
+    
+    variables (a b c d e : ℕ)
+    variable h1 : a = b
+    variable h2 : b = c + 1
+    variable h3 : c = d
+    variable h4 : e = 1 + d
+    
+    theorem T : a = e :=
+    calc
+      a     = b      : h1
+        ... = c + 1  : h2
+        ... = d + 1  : congr_arg _ h3
+        ... = 1 + d  : add_comm d (1 : ℕ)
+        ... =  e     : eq.symm h4
+    ```
+
+    - Example 2:
+    
+    ```lean
+    /lean import topology.basic
+    
+    #check topological_space
+    ```
+
+    - Example 3:
+    
+    ```lean
+    /lean import algebra.group.defs
+    
+    variables (G : Type) [group G] (a b c : G)
+    
+    example : a * a⁻¹ * 1 * b = b * c * c⁻¹ :=
+    begin
+      simp
+    end
+    ```
+
+- Arend is available via `/arend` command. Only typecheck supported.
+
+    - Example: 
+    
+    ```arend
+    /arend \func f => 0
+    ```
+    
+- Rzk is available via `/rzk` command. Typechecker supported for every language.
+
+    - Example:
+
+    ```rzk
+    /rzk  #lang rzk-1
+    
+    #def prod : (A : U) -> (B : U) -> U
+      := \A -> \B -> ∑ (x : A), B
+    
+    #def isweq : (A : U) -> (B : U) -> (f : (_ : A) -> B) -> U
+      := \A -> \B -> \f ->
+            ∑ (g : (_ : B) -> A),
+              prod ((x : A) -> g (f x) =_{A} x)
+                   ((y : B) -> f (g y) =_{B} y)
+    
+    #def weq : (A : U) -> (B : U) -> U
+      := \A -> \B -> ∑ (f : (_ : A) -> B), isweq A B f
+    
+    #def Theorem-4.1
+      : (I : CUBE)
+      -> (psi : (t : I) -> TOPE)
+      -> (phi : {(t : I) | psi t} -> TOPE)
+      -> (X : U)
+      -> (Y : <{t : I | psi t} -> (x : X) -> U >)
+      -> (f : <{t : I | phi t} -> (x : X) -> Y t x >)
+      -> weq <{t : I | psi t} -> (x : X)          -> Y t x [phi t |-> f t]>
+             ((x : X)         -> <{t : I | psi t} -> Y t x [phi t |-> f t x]>)
+      := \I -> \psi -> \phi -> \X -> \Y -> \f ->
+        (\k -> \x -> \t -> k t x,
+          (\k -> \{t : I | psi t} -> \x -> (k x) t,
+            (\k -> refl_{k}, \k -> refl_{k})))
+    
+    #def Theorem-4.2_uncurry_ext
+      : (I : CUBE)
+      -> (J : CUBE)
+      -> (psi : (t : I) -> TOPE)
+      -> (zeta : (s : J) -> TOPE)
+      -> (X : <{t : I | psi t} -> <{s : J | zeta s} -> U> >)
+      -> (chi : {(t : I) | psi t} -> TOPE)
+      -> (phi : {(s : J) | zeta s} -> TOPE)
+      -> (f : <{(t, s) : I * J | psi t /\ zeta s} -> X t s >)
+      -> (_ : <{t : I | psi t}
+                -> <{s : J | zeta s}
+                     -> X t s [chi s |-> f (t, s)]>
+                   [phi t |-> \s -> f (t, s)]>)
+      -> <{(t, s) : I * J | psi t /\ zeta s}
+            -> X t s [(phi t /\ zeta s) \/ (psi t /\ chi s) |-> f (t, s)]>
+      := \I -> \J -> \psi -> \zeta -> \X -> \chi -> \phi -> \f ->
+        \k -> \(t, s) -> k t s
+    ```
+
 ## Available instances
 
+1. [@ProofBot](https://t.me/ProofAssistantBot) (online)
+2. [@ProofDebugBot](https://t.me/ProofDebugBot) (for debug purpose, offline most of the time)
+
 ## Acknowledgements
+
+- PLT Community
+- Nikolay Kudasov
+- Andrey Borzenkov
+- Matúš Tejiščák
+- My wife

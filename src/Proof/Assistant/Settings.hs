@@ -7,12 +7,16 @@
 module Proof.Assistant.Settings where
 
 import Dhall
+import Data.HashMap.Strict (HashMap)
 
 data Settings = Settings
   { botName :: !Text
   , allowedCommands :: ![Text]
   , botToken :: !Text
   , outputSize :: !Natural
+  , help :: Text
+  , helpMessages :: HashMap Text Text
+  , version :: Text
   , interpretersSettings :: !InterpretersSettings
   } deriving (Generic, FromDhall)
 

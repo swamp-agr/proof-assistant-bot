@@ -116,6 +116,9 @@ let Settings = { botName : Text
                                         , rzk : InternalSettings
                                         }
                , outputSize : Natural
+               , help : Text
+               , version : Text
+               , helpMessages : List { mapKey : Text, mapValue : Text }
                }
 let interpreterSettings =
       { agda = agdaSettings          
@@ -133,5 +136,48 @@ in
     [ "/coq", "coq" ]
 , botToken = env:PROOF_ASSISTANT_BOT_TOKEN as Text
 , outputSize = 1000000
+, help =
+    ''
+    /help - display this message.
+
+    /coq <input> - typecheck your input.
+
+    /agda /load <input> - load and typecheck your input into Agda state.
+
+    /agda /reload - reload previously loaded input.
+
+    /agda /typeOf <expr> - get type of the given expression.
+
+    /agda <expr> - evaluate the given expression.
+
+    /idris2 /load <input> - load and typecheck your input. return `the core` of program.
+
+    /idris2 /typeOf <expr> - typecheck the given expression.
+
+    /idris2 <expr> - also typecheck the given expression.
+
+    /lean <input> - typecheck your input.
+
+    /arend <input> - typecheck your input.
+
+    /rzk #lang - typecheck input in the given language. See list of all supported languages here: github:fizruk/rzk.
+    ''
+, helpMessages = [] : List { mapKey : Text, mapValue : Text }
+, version =
+  ''
+  Proof Assistant Bot v.<bot_version>
+  https://github.com/swamp-agr/proof-assistant-bot
+  
+  Agda (lib) 2.6.2.2
+
+  The Coq Proof Assistant, version 8.16.1
+  compiled with OCaml 4.14.0
+
+  Idris 2, version 0.6.0
+
+  Lean (version 3.49.0, commit acf633e01a87, Release)
+
+  Arend 1.9
+  ''
 , interpretersSettings = interpreterSettings
 } : Settings
