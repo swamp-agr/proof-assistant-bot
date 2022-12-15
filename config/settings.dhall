@@ -25,6 +25,7 @@ let InternalSettings =
 let AgdaSettings = { internal : InternalSettings }
 let LeanSettings =
       { projectDir : Text
+      , leanBlockList : List Text
       , externalLean : ExternalSettings
       }
 let ArendSettings =
@@ -79,6 +80,9 @@ let leanSettings =
           , time = 10
           }
       , projectDir = env:LEAN_PROJECT_PATH as Text
+      , leanBlockList =
+          [ "import system.io_interface", "import system.io"
+          ]
       }
 let agdaSettings =
       { internal = emptyInternalSettings //

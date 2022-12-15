@@ -44,6 +44,7 @@ data AgdaSettings = AgdaSettings
 
 data LeanSettings = LeanSettings
   { projectDir :: !FilePath -- ^ Lean requires project where to store source files for typechecking.
+  , leanBlockList :: [Text]
   , externalLean   :: !ExternalInterpreterSettings
   } deriving (Generic, FromDhall)
 
