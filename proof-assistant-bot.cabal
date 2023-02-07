@@ -32,12 +32,12 @@ library
                     , process
                     , rzk
                     , stm
-                    , telegram-bot-simple >= 0.5.2
+                    , telegram-bot-simple >= 0.9
                     , text
                     , unix
                     , unordered-containers
                     -- interpreters
-                    , Agda
+                    , Agda >= 2.6.3
     exposed-modules:  Proof.Assistant.Agda
                     , Proof.Assistant.Arend
                     , Proof.Assistant.Idris

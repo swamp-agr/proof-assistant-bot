@@ -24,6 +24,7 @@ data InterpreterResponse = InterpreterResponse
 toSendMessageRequest :: Bool -> InterpreterResponse -> SendMessageRequest
 toSendMessageRequest isMonospace InterpreterResponse{..} = SendMessageRequest
   { sendMessageChatId                   = SomeChatId interpreterResponseTelegramChatId
+  , sendMessageMessageThreadId          = Nothing
   , sendMessageText
       = if isMonospace
         then "```\n" <> decodeUtf8 interpreterResponseResponse <> "\n```\n"

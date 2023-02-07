@@ -6,7 +6,7 @@ import Agda.Interaction.Command.Internal.Parser
 import Agda.Syntax.Common (InteractionId (..), argNameToString)
 import Agda.TypeChecking.Monad.Base (TCM, getMetaInfo)
 import Agda.TypeChecking.Monad.Context (getContextTelescope)
-import Agda.TypeChecking.Monad.MetaVars (lookupInteractionId, lookupMeta, withMetaInfo)
+import Agda.TypeChecking.Monad.MetaVars (lookupInteractionId, lookupLocalMeta, withMetaInfo)
 import Agda.TypeChecking.Pretty (prettyTCM)
 import Agda.TypeChecking.Reduce (normalise)
 import Agda.TypeChecking.Substitute.Class (raise)
@@ -21,7 +21,7 @@ import qualified Data.List as List
 showContext :: [ByteString] -> TCM ByteString
 showContext (meta:args) = do
     i <- InteractionId <$> readM (BS8.unpack meta)
-    mi <- lookupMeta =<< lookupInteractionId i
+    mi <- lookupLocalMeta =<< lookupInteractionId i
     BS8.unlines <$> withMetaInfo (getMetaInfo mi) displayMore
   where
     display (x, t) n = do

@@ -4,9 +4,10 @@ import Agda.Syntax.Abstract (Expr)
 import Agda.Syntax.Common (InteractionId (..))
 import Agda.Syntax.Parser (exprParser, parse, parsePosString)
 import Agda.Syntax.Position (getRange, noRange, rStart)
-import Agda.Syntax.Translation.ConcreteToAbstract (concreteToAbstract, localToAbstract)
+import Agda.Syntax.Translation.ConcreteToAbstract
+  (checkCohesionAttributes, concreteToAbstract, localToAbstract)
 import Agda.TypeChecking.Monad.Base
-import Agda.TypeChecking.Monad.MetaVars (lookupInteractionId, lookupMeta, withInteractionId)
+import Agda.TypeChecking.Monad.MetaVars (lookupInteractionId, lookupLocalMeta, withInteractionId)
 import Agda.TypeChecking.Warnings (runPM)
 import Agda.Utils.Impossible (__IMPOSSIBLE__)
 import Agda.Utils.Pretty (text)
@@ -20,11 +21,12 @@ import qualified Data.ByteString.Char8 as BS8
 metaParseExpr ::  InteractionId -> ByteString -> TCM Expr
 metaParseExpr ii s =
     do  m <- lookupInteractionId ii
-        scope <- getMetaScope <$> lookupMeta m
-        r <- getRange <$> lookupMeta m
+        scope <- getMetaScope <$> lookupLocalMeta m
+        r <- getRange <$> lookupLocalMeta m
         -- liftIO $ putStrLn $ prettyShow scope
         let pos = fromMaybe (__IMPOSSIBLE__) (rStart r)
-        e <- runPM $ parsePosString exprParser pos (BS8.unpack s)
+        (e, coh) <- runPM $ parsePosString exprParser pos (BS8.unpack s)
+        checkCohesionAttributes coh
         concreteToAbstract scope e
 
 actOnMeta :: [ByteString] -> (InteractionId -> Expr -> TCM a) -> TCM a
@@ -37,7 +39,8 @@ actOnMeta _ _ = __IMPOSSIBLE__
 
 parseExpr :: String -> TCM Expr
 parseExpr s = do
-    e <- runPM $ parse exprParser s
+    (e, coh) <- runPM $ parse exprParser s
+    checkCohesionAttributes coh
     localToAbstract e return
 
 readM :: Read a => String -> TCM a
