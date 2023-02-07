@@ -1,6 +1,6 @@
 cabal-version:      2.4
 name:               proof-assistant-bot
-version:            0.2.0
+version:            0.2.1
 synopsis:           Telegram bot for proof assistants
 description:        Bridge between Telegram Bot and several proof assistants.
                     .

@@ -1,5 +1,9 @@
 # Revision history for proof-assistant-bot
 
+## 0.2.1 -- 2023-02-07
+
+- Agda bumped to 2.6.3, telegram-bot-simple bumped to 0.9 (see [#29](https://github.com/swamp-agr/proof-assistant-bot/pull/29)).
+
 ## 0.2.0 -- 2022-12-10 
 
 - Import Agda primitives for every `/(re)load` (see [#21](https://github.com/swamp-agr/proof-assistant-bot/pull/21));
