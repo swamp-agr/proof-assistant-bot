@@ -19,6 +19,7 @@ import Agda.Interaction.State
 import Agda.TypeChecking.Monad.Base (envCurrentPath)
 import Agda.Utils.FileName (absolute)
 import Proof.Assistant.Helpers
+import Proof.Assistant.RefreshFile (validate)
 import Proof.Assistant.Request
 import Proof.Assistant.Settings
 import Proof.Assistant.State
@@ -42,7 +43,7 @@ callAgda currentAgdaState@AgdaState{..} InterpreterRequest{..} = do
 
 -- | Since every chat associated with its own Agda state, we need to modify 'TCEnv'
 -- by setting 'envCurrentPath' with an absolute path to the corresponding file.
-withChat :: ChatId -> AgdaState -> IO a -> IO a
+withChat :: ChatId -> AgdaState -> IO ByteString -> IO ByteString
 withChat chatId state action = do
   tmpDir <- getTemporaryDirectory
   let InternalInterpreterSettings{..} = (internal . settings . interpreterState) state
@@ -54,7 +55,7 @@ withChat chatId state action = do
   absSourceFile <- absolute sourceFile
   let modifiedEnv s = s { envCurrentPath = Just absSourceFile }
   setEnv state modifiedEnv
-  action
+  pure . validate sourceFile =<< action
 
 -- | Parse user input as command and execute in Agda.
 interpretAgda :: AgdaState -> ByteString -> IO ByteString
