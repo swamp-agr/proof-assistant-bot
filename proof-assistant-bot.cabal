@@ -32,7 +32,8 @@ library
                     , process
                     , rzk
                     , stm
-                    , telegram-bot-simple >= 0.9
+                    , telegram-bot-api
+                    , telegram-bot-simple >= 0.10
                     , text
                     , unix
                     , unordered-containers
