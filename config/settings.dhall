@@ -170,7 +170,7 @@ in
   Proof Assistant Bot v.<bot_version>
   https://github.com/swamp-agr/proof-assistant-bot
   
-  Agda (lib) 2.6.2.2
+  Agda (lib) <agda_version>
 
   The Coq Proof Assistant, version 8.16.1
   compiled with OCaml 4.14.0

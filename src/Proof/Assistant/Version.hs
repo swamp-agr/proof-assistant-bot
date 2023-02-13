@@ -8,6 +8,10 @@ import Paths_proof_assistant_bot
 
 import qualified Data.Text as Text
 
+-- | Version of Agda.
+agdaVersion :: String
+agdaVersion = VERSION_Agda
+
 -- | Version of Rzk.
 rzkVersion :: String
 rzkVersion = VERSION_rzk
@@ -20,5 +24,6 @@ proofAssistantBotVersion = showVersion version
 makeVersion :: Text -> Text
 makeVersion txt = Text.unlines
   [ Text.replace "<bot_version>" (Text.pack proofAssistantBotVersion) txt
+   ,Text.replace "<agda_version>" (Text.pack agdaVersion) txt
   , "rzk v." <> Text.pack rzkVersion
   ]
