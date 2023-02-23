@@ -31,7 +31,6 @@ let InternalSettings =
 let AgdaSettings = { internal : InternalSettings }
 let LeanSettings =
       { projectDir : Text
-      , leanBlockList : List Text
       , externalLean : ExternalSettings
       }
 let ArendSettings =
@@ -107,7 +106,6 @@ let leanSettings =
             }
           }
       , projectDir = leanProjectPath
-      , leanBlockList = [] : List Text
       }
 let agdaSettings =
       { internal = emptyInternalSettings //

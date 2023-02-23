@@ -5,7 +5,6 @@ module Proof.Assistant.Lean where
 import Control.Concurrent.Async (race)
 import Data.ByteString (ByteString)
 import Data.Coerce (coerce)
-import Data.Foldable (foldl')
 import Data.Text (unpack)
 import System.Directory (withCurrentDirectory)
 import System.Exit (ExitCode)
@@ -18,13 +17,11 @@ import Proof.Assistant.ResourceLimit
 import Proof.Assistant.Settings
 import Proof.Assistant.State
 
-import qualified Data.Text as Text
-
 callLean :: InterpreterState LeanSettings -> InterpreterRequest -> IO ByteString
 callLean InterpreterState{..} ir = do
-  let ls@LeanSettings{..} = coerce settings
+  let LeanSettings{..} = coerce settings
       s@ExternalInterpreterSettings{..} = externalLean
-  (dir, path) <- refreshTmpFile s (validateLean ls ir) (Just projectDir)
+  (dir, path) <- refreshTmpFile s ir (Just projectDir)
   withCurrentDirectory dir $ do
     let runProcess = runWithSandboxMaybe sandbox executable args path
         asyncExecutable = do
@@ -36,16 +33,6 @@ callLean InterpreterState{..} ir = do
     case eresult of
       Left ()  -> pure "Time limit exceeded"
       Right bs -> pure bs
-
-validateLean :: LeanSettings -> InterpreterRequest -> InterpreterRequest
-validateLean LeanSettings{..} ir@InterpreterRequest{..}
-  = ir { interpreterRequestMessage = validatedMsg }
-  where
-    remove txt blockedPrefix = Text.replace blockedPrefix "" txt
-    removeAllFromLine x = foldl' remove x leanBlockList
-    removeUnsafeImports = textToBS . removeAllFromLine . bsToText
-
-    validatedMsg = removeUnsafeImports interpreterRequestMessage
 
 runWithSandboxMaybe
   :: Maybe SandboxSettings -> Executable -> CmdArgs -> FilePath -> IO (ExitCode, String, String)
