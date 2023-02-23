@@ -1,3 +1,7 @@
+let nixProfile = env:NIX_PROFILE as Text
+let leanBinPath = env:LEAN_BIN_PATH as Text
+let leanProjectPath = env:LEAN_PROJECT_PATH as Text
+
 let Limit = { soft : Natural, hard : Natural }
 let SandboxSettings = { sandboxExecutable : Text, sandboxArgs : List Text }
 let ExternalSettings =
@@ -77,7 +81,7 @@ let idrisSettings = emptyExternalSettings //
 let leanSettings =
       { externalLean = emptyExternalSettings //
           { args = ["--profile"] : List Text
-          , executable = env:LEAN_BIN_PATH as Text
+          , executable = leanBinPath
           , tempFilePrefix = "lean"
           , fileExtension = "lean"
           , time = 10
@@ -86,15 +90,14 @@ let leanSettings =
               , sandboxArgs =
                 [ "--unshare-all"
                 -- environmental variables
-                , "--setenv HOME $HOME"
-                , "--setenv LEAN_BIN_PATH $LEAN_BIN_PATH"
-                , "--setenv LEAN_PROJECT_PATH $LEAN_PROJECT_PATH"
+                , "--setenv LEAN_BIN_PATH ${leanBinPath}"
+                , "--setenv LEAN_PROJECT_PATH ${leanProjectPath}"
                 -- directories binds
                 , "--ro-bind /lib /lib"
                 , "--ro-bind /lib64 /lib64"
                 , "--ro-bind /nix/store /nix/store"
-                , "--ro-bind $LEAN_PROJECT_PATH $LEAN_PROJECT_PATH"
-                , "--ro-bind $HOME/.nix-profile $HOME/.nix-profile"
+                , "--ro-bind ${leanProjectPath} ${leanProjectPath}"
+                , "--ro-bind ${nixProfile} ${nixProfile}"
                 -- runtime
                 , "--proc /proc"
                 , "--dev /dev"
@@ -103,7 +106,7 @@ let leanSettings =
                 ] : List Text
             }
           }
-      , projectDir = env:LEAN_PROJECT_PATH as Text
+      , projectDir = leanProjectPath
       , leanBlockList =
           [ "import system.io_interface", "import system.io"
           ]
