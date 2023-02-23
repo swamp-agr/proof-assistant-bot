@@ -1,4 +1,9 @@
+let nixProfile = env:NIX_PROFILE as Text
+let leanBinPath = env:LEAN_BIN_PATH as Text
+let leanProjectPath = env:LEAN_PROJECT_PATH as Text
+
 let Limit = { soft : Natural, hard : Natural }
+let SandboxSettings = { sandboxExecutable : Text, sandboxArgs : List Text }
 let ExternalSettings =
       { args : List Text
       , executable : Text
@@ -14,6 +19,7 @@ let ExternalSettings =
       , fileExtension : Text
       , inputSize : Natural
       , tempFilePrefix : Text
+      , sandbox : Optional SandboxSettings
       }
 let InternalSettings =
       { timeout : Natural
@@ -25,7 +31,6 @@ let InternalSettings =
 let AgdaSettings = { internal : InternalSettings }
 let LeanSettings =
       { projectDir : Text
-      , leanBlockList : List Text
       , externalLean : ExternalSettings
       }
 let ArendSettings =
@@ -51,6 +56,7 @@ let emptyExternalSettings =
       , fileExtension = ""
       , inputSize = 1000000
       , tempFilePrefix = ""
+      , sandbox = None SandboxSettings
       } : ExternalSettings
 let emptyInternalSettings =
       { timeout = 10
@@ -74,15 +80,32 @@ let idrisSettings = emptyExternalSettings //
 let leanSettings =
       { externalLean = emptyExternalSettings //
           { args = ["--profile"] : List Text
-          , executable = env:LEAN_BIN_PATH as Text
+          , executable = leanBinPath
           , tempFilePrefix = "lean"
           , fileExtension = "lean"
           , time = 10
+          , sandbox = Some
+              { sandboxExecutable = "/usr/bin/bwrap"
+              , sandboxArgs =
+                [ "--unshare-all"
+                -- environmental variables
+                , "--setenv", "LEAN_BIN_PATH", leanBinPath
+                , "--setenv", "LEAN_PROJECT_PATH", leanProjectPath
+                -- directories binds
+                , "--ro-bind", "/lib", "/lib"
+                , "--ro-bind", "/lib64", "/lib64"
+                , "--ro-bind", "/nix/store", "/nix/store"
+                , "--ro-bind", leanProjectPath, leanProjectPath
+                , "--ro-bind", nixProfile, nixProfile
+                -- runtime
+                , "--proc", "/proc"
+                , "--dev", "/dev"
+                -- current directory
+                , "--chdir", leanProjectPath
+                ] : List Text
+            }
           }
-      , projectDir = env:LEAN_PROJECT_PATH as Text
-      , leanBlockList =
-          [ "import system.io_interface", "import system.io"
-          ]
+      , projectDir = leanProjectPath
       }
 let agdaSettings =
       { internal = emptyInternalSettings //

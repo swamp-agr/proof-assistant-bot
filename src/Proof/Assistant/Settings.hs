@@ -28,6 +28,7 @@ data ExternalInterpreterSettings = ExternalInterpreterSettings
   , tempFilePrefix :: !FilePath -- ^ Prefix to filepath to avoid confusion between different interpreters.
   , fileExtension :: !FilePath -- ^ File extension used by interpreter.
   , inputSize :: !Natural -- ^ input size in bytes.
+  , sandbox :: !(Maybe SandboxSettings)
   } deriving (Generic, FromDhall)
 
 data InternalInterpreterSettings = InternalInterpreterSettings
@@ -44,7 +45,6 @@ data AgdaSettings = AgdaSettings
 
 data LeanSettings = LeanSettings
   { projectDir :: !FilePath -- ^ Lean requires project where to store source files for typechecking.
-  , leanBlockList :: [Text]
   , externalLean   :: !ExternalInterpreterSettings
   } deriving (Generic, FromDhall)
 
@@ -89,6 +89,11 @@ data ResourceSettings = ResourceSettings
 data Limit = Limit
   { soft :: !Natural
   , hard :: !Natural
+  } deriving (Generic, FromDhall)
+
+data SandboxSettings = SandboxSettings
+  { sandboxExecutable :: !Executable
+  , sandboxArgs :: !CmdArgs
   } deriving (Generic, FromDhall)
 
 -- | Combination of all supported interpreters settings.
