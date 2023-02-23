@@ -107,9 +107,7 @@ let leanSettings =
             }
           }
       , projectDir = leanProjectPath
-      , leanBlockList =
-          [ "import system.io_interface", "import system.io"
-          ]
+      , leanBlockList = [] : List Text
       }
 let agdaSettings =
       { internal = emptyInternalSettings //
