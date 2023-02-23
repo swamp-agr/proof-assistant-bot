@@ -90,19 +90,19 @@ let leanSettings =
               , sandboxArgs =
                 [ "--unshare-all"
                 -- environmental variables
-                , "--setenv LEAN_BIN_PATH ${leanBinPath}"
-                , "--setenv LEAN_PROJECT_PATH ${leanProjectPath}"
+                , "--setenv", "LEAN_BIN_PATH", leanBinPath
+                , "--setenv", "LEAN_PROJECT_PATH", leanProjectPath
                 -- directories binds
-                , "--ro-bind /lib /lib"
-                , "--ro-bind /lib64 /lib64"
-                , "--ro-bind /nix/store /nix/store"
-                , "--ro-bind ${leanProjectPath} ${leanProjectPath}"
-                , "--ro-bind ${nixProfile} ${nixProfile}"
+                , "--ro-bind", "/lib", "/lib"
+                , "--ro-bind", "/lib64", "/lib64"
+                , "--ro-bind", "/nix/store", "/nix/store"
+                , "--ro-bind", leanProjectPath, leanProjectPath
+                , "--ro-bind", nixProfile, nixProfile
                 -- runtime
-                , "--proc /proc"
-                , "--dev /dev"
+                , "--proc", "/proc"
+                , "--dev", "/dev"
                 -- current directory
-                , "--chdir $LEAN_PROJECT_PATH"
+                , "--chdir", leanProjectPath
                 ] : List Text
             }
           }
