@@ -1,4 +1,5 @@
 let Limit = { soft : Natural, hard : Natural }
+let SandboxSettings = { sandboxExecutable : Text, sandboxArgs : List Text }
 let ExternalSettings =
       { args : List Text
       , executable : Text
@@ -14,6 +15,7 @@ let ExternalSettings =
       , fileExtension : Text
       , inputSize : Natural
       , tempFilePrefix : Text
+      , sandbox : Optional SandboxSettings
       }
 let InternalSettings =
       { timeout : Natural
@@ -51,6 +53,7 @@ let emptyExternalSettings =
       , fileExtension = ""
       , inputSize = 1000000
       , tempFilePrefix = ""
+      , sandbox = None SandboxSettings
       } : ExternalSettings
 let emptyInternalSettings =
       { timeout = 10
@@ -78,6 +81,27 @@ let leanSettings =
           , tempFilePrefix = "lean"
           , fileExtension = "lean"
           , time = 10
+          , sandbox = Some
+              { sandboxExecutable = "/usr/bin/bwrap"
+              , sandboxArgs =
+                [ "--unshare-all"
+                -- environmental variables
+                , "--setenv HOME $HOME"
+                , "--setenv LEAN_BIN_PATH $LEAN_BIN_PATH"
+                , "--setenv LEAN_PROJECT_PATH $LEAN_PROJECT_PATH"
+                -- directories binds
+                , "--ro-bind /lib /lib"
+                , "--ro-bind /lib64 /lib64"
+                , "--ro-bind /nix/store /nix/store"
+                , "--ro-bind $LEAN_PROJECT_PATH $LEAN_PROJECT_PATH"
+                , "--ro-bind $HOME/.nix-profile $HOME/.nix-profile"
+                -- runtime
+                , "--proc /proc"
+                , "--dev /dev"
+                -- current directory
+                , "--chdir $LEAN_PROJECT_PATH"
+                ] : List Text
+            }
           }
       , projectDir = env:LEAN_PROJECT_PATH as Text
       , leanBlockList =

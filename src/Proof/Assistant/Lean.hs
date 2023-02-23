@@ -8,6 +8,7 @@ import Data.Coerce (coerce)
 import Data.Foldable (foldl')
 import Data.Text (unpack)
 import System.Directory (withCurrentDirectory)
+import System.Exit (ExitCode)
 import System.Process (readProcessWithExitCode)
 
 import Proof.Assistant.Helpers
@@ -25,8 +26,7 @@ callLean InterpreterState{..} ir = do
       s@ExternalInterpreterSettings{..} = externalLean
   (dir, path) <- refreshTmpFile s (validateLean ls ir) (Just projectDir)
   withCurrentDirectory dir $ do
-    let fullArgs = (unpack <$> coerce args) <> [path]
-        runProcess = readProcessWithExitCode (t2s executable) fullArgs ""
+    let runProcess = runWithSandboxMaybe sandbox executable args
         asyncExecutable = do
           setPriority priority
           (_exitCode, stdout, stderr) <- runProcess
@@ -46,3 +46,14 @@ validateLean LeanSettings{..} ir@InterpreterRequest{..}
     removeUnsafeImports = textToBS . removeAllFromLine . bsToText
 
     validatedMsg = removeUnsafeImports interpreterRequestMessage
+
+runWithSandboxMaybe
+  :: Maybe SandboxSettings -> Executable -> CmdArgs -> IO (ExitCode, String, String)
+runWithSandboxMaybe Nothing exec arguments
+  = readProcessWithExitCode (t2s exec) (unpack <$> coerce arguments) ""
+runWithSandboxMaybe (Just SandboxSettings{..}) exec arguments
+  = readProcessWithExitCode (t2s sandboxExecutable) fullArgsList ""
+  where
+    sandboxArgsList = unpack <$> coerce sandboxArgs
+    appArgsList = t2s exec : (unpack <$> coerce arguments)
+    fullArgsList = concat [sandboxArgsList, ["--"], appArgsList]
