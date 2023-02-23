@@ -26,7 +26,7 @@ callLean InterpreterState{..} ir = do
       s@ExternalInterpreterSettings{..} = externalLean
   (dir, path) <- refreshTmpFile s (validateLean ls ir) (Just projectDir)
   withCurrentDirectory dir $ do
-    let runProcess = runWithSandboxMaybe sandbox executable args
+    let runProcess = runWithSandboxMaybe sandbox executable args path
         asyncExecutable = do
           setPriority priority
           (_exitCode, stdout, stderr) <- runProcess
@@ -48,12 +48,12 @@ validateLean LeanSettings{..} ir@InterpreterRequest{..}
     validatedMsg = removeUnsafeImports interpreterRequestMessage
 
 runWithSandboxMaybe
-  :: Maybe SandboxSettings -> Executable -> CmdArgs -> IO (ExitCode, String, String)
-runWithSandboxMaybe Nothing exec arguments
-  = readProcessWithExitCode (t2s exec) (unpack <$> coerce arguments) ""
-runWithSandboxMaybe (Just SandboxSettings{..}) exec arguments
+  :: Maybe SandboxSettings -> Executable -> CmdArgs -> FilePath -> IO (ExitCode, String, String)
+runWithSandboxMaybe Nothing exec arguments path
+  = readProcessWithExitCode (t2s exec) ((unpack <$> coerce arguments) <> [path]) ""
+runWithSandboxMaybe (Just SandboxSettings{..}) exec arguments path
   = readProcessWithExitCode (t2s sandboxExecutable) fullArgsList ""
   where
     sandboxArgsList = unpack <$> coerce sandboxArgs
     appArgsList = t2s exec : (unpack <$> coerce arguments)
-    fullArgsList = concat [sandboxArgsList, ["--"], appArgsList]
+    fullArgsList = concat [sandboxArgsList, ["--"], appArgsList, [path]]
