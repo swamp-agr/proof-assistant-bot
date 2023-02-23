@@ -41,6 +41,12 @@ One of them is `PROOF_ASSISTANT_BOT_TOKEN`. Obtain it via `@BotFather` and set i
 export PROOF_ASSISTANT_BOT_TOKEN="..."
 ```
 
+3. Another environmental variable that unfortunately needed is `NIX_PROFILE`. Please add it as 
+
+```
+export NIX_PROFILE="$HOME/.nix-profile"
+```
+
 ### Coq
 
 1. Install `opam >= 2.1.0`, e.g. [from here](https://ocaml.org/docs/up-and-running#installation-for-unix).
