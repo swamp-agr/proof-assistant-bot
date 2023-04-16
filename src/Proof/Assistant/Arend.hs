@@ -3,7 +3,6 @@
 module Proof.Assistant.Arend where
 
 import Control.Concurrent.Async (race)
-import Data.ByteString (ByteString)
 import Data.Coerce (coerce)
 import Data.Text (unpack)
 import System.Directory (createDirectoryIfMissing, withCurrentDirectory)
@@ -13,6 +12,7 @@ import System.Process (readProcessWithExitCode)
 import Proof.Assistant.Helpers
 import Proof.Assistant.RefreshFile
 import Proof.Assistant.Request
+import Proof.Assistant.Response
 import Proof.Assistant.ResourceLimit
 import Proof.Assistant.Settings
 import Proof.Assistant.State
@@ -22,7 +22,7 @@ import qualified Data.Text.IO as Text
 
 -- | Call Arend typechecker as CLI application.
 -- It prepares the CLI command, executes it and waits for response.
-callArend :: InterpreterState ArendSettings -> InterpreterRequest -> IO ByteString
+callArend :: InterpreterState ArendSettings -> InterpreterRequest -> IO BotResponse
 callArend InterpreterState{..} ir = do
   let ArendSettings{..} = coerce settings
       ExternalInterpreterSettings{..} = externalArend
@@ -37,8 +37,8 @@ callArend InterpreterState{..} ir = do
         asyncTimer = asyncWait time
     eresult <- race asyncTimer (handleErrorMaybe asyncExecutable)
     case eresult of
-      Left ()  -> pure "Time limit exceeded"
-      Right bs -> pure bs
+      Left ()  -> pure (TextResponse "Time limit exceeded")
+      Right bs -> pure (TextResponse bs)
 
 -- | Arend requires a project for every file to typecheck.
 -- It reads project configuration, finds all files in a project directory

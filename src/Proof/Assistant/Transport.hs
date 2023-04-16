@@ -22,6 +22,7 @@ data Interpreters = Interpreters
   , coq   :: !ExternalState
   , lean  :: !(InterpreterState LeanSettings)
   , rzk   :: !InternalState
+  , alloy :: !(InterpreterState AlloySettings)
   }
 
 -- | Initiate new interpreters from settings.
@@ -33,6 +34,7 @@ newInterpreters settings = do
   coq <- newInterpreterState $ Settings.coq settings
   lean <- newInterpreterState $ Settings.lean settings
   rzk <- newInterpreterState $ Settings.rzk settings
+  alloy <- newInterpreterState $ Settings.alloy settings
   pure Interpreters{..}
 
 type ExternalState = InterpreterState ExternalInterpreterSettings

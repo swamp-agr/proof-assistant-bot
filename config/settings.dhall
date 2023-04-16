@@ -40,6 +40,15 @@ let ArendSettings =
       , arendModuleName : Text
       , externalArend : ExternalSettings
       }
+let AlloySettings =
+      { alloyProjectDir : Text
+      , alloySharedDir : Text
+      , dotGraphExecutable : Text
+      , dotGraphArgs : List Text
+      , gifConverterExecutable : Text
+      , gifConverterArgs : List Text
+      , externalAlloy : ExternalSettings
+      }
 let defaultResource =
       { totalMemory = { soft = 5, hard = 10 }
       , dataSize = { soft = 2176782336, hard = 2176782336 }
@@ -131,6 +140,31 @@ let arendSettings = { arendRootProjectDir = _arendRootProjectDir
                         , time = 60
                         }
                     }
+let _alloyProjectDir = env:ALLOY_PROJECT_DIR as Text
+let _alloySharedDir = env:PROOF_ASSISTANT_SHARED_IMG_DIR as Text
+let _alloyJar = env:ALLOY_PATH as Text
+let alloySettings =
+      { alloyProjectDir = _alloyProjectDir
+      , dotGraphExecutable = "dot"
+      , dotGraphArgs =
+          [ "-Tpng:cairo" ]
+      , gifConverterExecutable = "convert"
+      , gifConverterArgs =
+          [ "-sharpen", "0x.4", "-delay", "80"
+          ]
+      , alloySharedDir = _alloySharedDir
+      , externalAlloy = emptyExternalSettings //
+          { executable = "${_javaHome}/bin/java"
+          , args =
+              [ "-classpath"
+              , "${_alloyJar}:${_alloyProjectDir}/bin"
+              , "Main"
+              ]
+          , tempFilePrefix = "alloy"
+          , fileExtension = "als"
+          , time = 60
+          }
+      }
 let Settings = { botName : Text
                , botToken : Text
                , interpretersSettings : { agda : AgdaSettings
@@ -139,11 +173,13 @@ let Settings = { botName : Text
                                         , coq : ExternalSettings 
                                         , lean : LeanSettings 
                                         , rzk : InternalSettings
+                                        , alloy : AlloySettings
                                         }
                , outputSize : Natural
                , help : Text
                , version : Text
                , helpMessages : List { mapKey : Text, mapValue : Text }
+               , sharedDir : Text
                }
 let interpreterSettings =
       { agda = agdaSettings          
@@ -152,6 +188,7 @@ let interpreterSettings =
       , coq = coqSettings
       , lean = leanSettings
       , rzk  = rzkSettings
+      , alloy = alloySettings
       }
 
 in
@@ -159,6 +196,7 @@ in
 { botName = "ProofAssistantBot"
 , botToken = env:PROOF_ASSISTANT_BOT_TOKEN as Text
 , outputSize = 1000000
+, sharedDir = _alloySharedDir
 , help =
     ''
     Proof Assistant Help:

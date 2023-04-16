@@ -9,6 +9,7 @@ import Data.Coerce (coerce)
 import Idris.Interaction.Command
 import Proof.Assistant.Helpers
 import Proof.Assistant.Request
+import Proof.Assistant.Response
 import Proof.Assistant.ResourceLimit
 import Proof.Assistant.Settings
 import Proof.Assistant.State
@@ -17,10 +18,10 @@ import qualified Data.ByteString.Char8 as BS8
 
 -- | Call Idris 2 as CLI application.
 -- It prepares the CLI command, executes it and waits for response.
-callIdris2 :: InterpreterState IdrisSettings -> InterpreterRequest -> IO ByteString
+callIdris2 :: InterpreterState IdrisSettings -> InterpreterRequest -> IO BotResponse
 callIdris2 InterpreterState{..} ir@InterpreterRequest{..}
   = case parseRequest interpreterRequestMessage of
-      Left err -> pure err
+      Left err -> pure (TextResponse err)
       Right (ecmd, request) -> do
         let s@ExternalInterpreterSettings{..} = coerce settings
         action <- chooseCommand s ir ecmd request
@@ -32,8 +33,8 @@ callIdris2 InterpreterState{..} ir@InterpreterRequest{..}
             asyncTimer = asyncWait time
         eresult <- race asyncTimer (handleErrorMaybe asyncExecutable)
         case eresult of
-          Left ()  -> pure "Time limit exceeded"
-          Right bs -> pure bs
+          Left ()  -> pure (TextResponse "Time limit exceeded")
+          Right bs -> pure (TextResponse bs)
 
 -- | Parse command. It could be unknown command or 'IdrisCommand' sub-command with its arguments
 -- or even expression to evaluate.

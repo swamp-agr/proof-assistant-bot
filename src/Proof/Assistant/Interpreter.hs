@@ -15,7 +15,6 @@ module Proof.Assistant.Interpreter where
 
 import Control.Concurrent.Async
 import Control.Monad (forever)
-import Data.ByteString (ByteString)
 import Data.Coerce (coerce)
 import Data.Text (unpack)
 import System.Directory
@@ -24,6 +23,7 @@ import System.Process
 import Agda.Interaction.State
 
 import Proof.Assistant.Agda
+import Proof.Assistant.Alloy
 import Proof.Assistant.Arend
 import Proof.Assistant.Idris
 import Proof.Assistant.Lean
@@ -51,7 +51,7 @@ runInterpreter botState is = forever $ do
 -- Could be CLI, Haskell function, network, whatever.
 -- It should have the @state@ and associated @settings@ with the @state@.
 class Interpreter state settings | state -> settings where
-  interpretSafe :: state -> InterpreterRequest -> IO ByteString
+  interpretSafe :: state -> InterpreterRequest -> IO BotResponse
   getSettings :: state -> InterpreterState settings
 
 instance Interpreter InternalState InternalInterpreterSettings  where
@@ -81,11 +81,15 @@ instance Interpreter (InterpreterState ArendSettings) ArendSettings where
   interpretSafe state request = callArend state request
   getSettings = id
 
+instance Interpreter (InterpreterState AlloySettings) AlloySettings where
+  interpretSafe state request = callAlloy state request
+  getSettings = id
+
 -- ** External Interpreter
 
 -- | Call some external CLI application, probably Coq.
 callExternalInterpreter
-  :: ExternalInterpreterSettings -> (FilePath, FilePath) -> IO ByteString
+  :: ExternalInterpreterSettings -> (FilePath, FilePath) -> IO BotResponse
 callExternalInterpreter ExternalInterpreterSettings{..} (dir, path)
   = withCurrentDirectory dir $ do
       contents <- readFile path
@@ -96,5 +100,5 @@ callExternalInterpreter ExternalInterpreterSettings{..} (dir, path)
           asyncTimer = asyncWait time
       eresult <- race asyncTimer (handleErrorMaybe asyncExecutable)
       case eresult of
-        Left ()  -> pure "Time limit exceeded"
-        Right bs -> pure bs
+        Left ()  -> pure (TextResponse "Time limit exceeded")
+        Right bs -> pure (TextResponse bs)

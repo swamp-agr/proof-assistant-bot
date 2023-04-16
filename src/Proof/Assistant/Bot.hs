@@ -1,3 +1,4 @@
+{-# LANGUAGE LambdaCase #-}
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE RecordWildCards #-}
 module Proof.Assistant.Bot where
@@ -15,12 +16,12 @@ import Telegram.Bot.Simple.UpdateParser
 
 import qualified Data.HashMap.Strict as HashMap
 
+import Agda.Interaction.State
 import Proof.Assistant.Helpers
 import Proof.Assistant.Interpreter
 import Proof.Assistant.Request
 import Proof.Assistant.Response
 import Proof.Assistant.Settings
-import Agda.Interaction.State
 import Proof.Assistant.Transport
 import Proof.Assistant.Version
 
@@ -36,7 +37,7 @@ data Action
   | Debug String  -- ^ Write in STDOUT unknown input.
 
 -- | Supported backends.
-data Backend = Agda | Arend | Idris | Coq | Lean | Rzk
+data Backend = Agda | Arend | Idris | Coq | Lean | Rzk | Alloy
 
 -- | Initiate bot app based on a 'Model'.
 proofAssistantBot :: Model -> BotApp Model Action
@@ -57,6 +58,7 @@ updateToAction BotState{..} update
   | isCommand "lean" update = Call <$> Just Lean <*> updateToRequest update
   | isCommand "arend" update = Call <$> Just Arend <*> updateToRequest update
   | isCommand "rzk" update = Call <$> Just Rzk <*> updateToRequest update
+  | isCommand "alloy" update = Call <$> Just Alloy <*> updateToRequest update
   -- other
   | isCommand "help" update = Help <$> updateToRequest update
   | isCommand "version" update = Version <$> updateToRequest update
@@ -80,33 +82,41 @@ handleAction (Call backend request) model = model <# do
       Idris -> handle idris
       Lean -> handle lean
       Rzk -> handle rzk
+      Alloy -> handle alloy
 handleAction (SendBack response) model = model <# sendResponseBack True response
 handleAction (Help req) model = model <# do
   let BotState {..} = model
       Settings{..} = botSettings
   case HashMap.lookup (bsToText $ interpreterRequestMessage req) helpMessages of
-    Nothing -> sendResponseBack False $ makeTelegramResponse req (textToBS help) 
+    Nothing -> sendResponseBack False
+      $ makeTelegramResponse req $ TextResponse $ textToBS help
     Just helpMessage -> sendResponseBack False
-      $ makeTelegramResponse req (textToBS helpMessage)
+      $ makeTelegramResponse req $ TextResponse $ textToBS helpMessage
 handleAction (Version req) model = model <# do
   let BotState {..} = model
       Settings{..} = botSettings
-  sendResponseBack False $ makeTelegramResponse req (textToBS $ makeVersion version)
+  sendResponseBack False
+    $ makeTelegramResponse req $ TextResponse $ textToBS $ makeVersion version
 handleAction (Debug str) model = model <# (liftIO $ putStrLn str)
 
 -- | Helper that will try to deliver message even when Telegram failed to send it.
 sendResponseBack :: Bool -> InterpreterResponse -> BotM ()
 sendResponseBack isMonospace response =
-  let req = toSendMessageRequest isMonospace response
+  let req = toMessageRequest isMonospace response
+      sendIt = \case
+        TgMsg msgReq -> sendMessage msgReq
+        TgPng imageReq -> sendPhoto imageReq
+        TgGif gifReq -> sendDocument gifReq
       waitAndRetry result = if responseOk result
         then pure ()
         else case responseParameters result >>= responseParametersRetryAfter of
                Nothing -> pure ()
                Just sec -> do
                  liftIO . threadDelay $ coerce sec * 1000000
-                 void (sendMessage req)
+                 void $ sendIt req
+
   in liftClientM $ do
-    result <- sendMessage req
+    result <- sendIt req
     waitAndRetry result
 
 -- | Initiate Telegram Env, 'Model', start Bot, start backends concurrently.
@@ -127,7 +137,8 @@ runTelegramBot state@BotState{..} = do
       Concurrently (runInterpreter state coq) *>
       Concurrently (runInterpreter state idris) *>
       Concurrently (runInterpreter state lean) *>
-      Concurrently (runInterpreter state rzk)
+      Concurrently (runInterpreter state rzk) *>
+      Concurrently (runInterpreter state alloy) 
 
 -- | Main function.
 run :: IO ()

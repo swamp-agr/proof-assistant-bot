@@ -17,6 +17,7 @@ data Settings = Settings
   , helpMessages :: HashMap Text Text -- ^ Help messages for sub-commands.
   , version :: Text -- ^ Version message.
   , interpretersSettings :: !InterpretersSettings -- ^ Settings for backend interpreters.
+  , sharedDir :: !FilePath
   } deriving (Generic, FromDhall)
 
 data ExternalInterpreterSettings = ExternalInterpreterSettings
@@ -56,13 +57,23 @@ data ArendSettings = ArendSettings
   , externalArend :: !ExternalInterpreterSettings
   } deriving (Generic, FromDhall)
 
+data AlloySettings = AlloySettings
+  { alloyProjectDir :: !FilePath
+  , dotGraphExecutable :: !Executable
+  , dotGraphArgs :: !CmdArgs
+  , gifConverterExecutable :: !Executable
+  , gifConverterArgs :: !CmdArgs
+  , alloySharedDir :: !FilePath
+  , externalAlloy :: !ExternalInterpreterSettings
+  } deriving (Generic, FromDhall)
+
 newtype IdrisSettings = IdrisSettings ExternalInterpreterSettings
   deriving newtype (FromDhall, ToInterpreterState)
   deriving stock Generic
 
 newtype CmdArgs = CmdArgs [Text]
   deriving stock Generic
-  deriving newtype FromDhall
+  deriving newtype (FromDhall, Semigroup)
 
 newtype Executable = Executable Text
   deriving stock Generic
@@ -104,6 +115,7 @@ data InterpretersSettings = InterpretersSettings
   , coq   :: !ExternalInterpreterSettings
   , lean  :: !LeanSettings
   , rzk   :: !InternalInterpreterSettings
+  , alloy :: !AlloySettings
   } deriving (Generic, FromDhall)
 
 -- | Load settings from file.
@@ -132,3 +144,6 @@ instance ToInterpreterState LeanSettings where
 
 instance ToInterpreterState ArendSettings where
   getQueueSize = getQueueSize . externalArend
+
+instance ToInterpreterState AlloySettings where
+  getQueueSize = getQueueSize . externalAlloy
