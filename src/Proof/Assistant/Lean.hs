@@ -3,7 +3,6 @@
 module Proof.Assistant.Lean where
 
 import Control.Concurrent.Async (race)
-import Data.ByteString (ByteString)
 import Data.Coerce (coerce)
 import Data.Text (unpack)
 import System.Directory (withCurrentDirectory)
@@ -13,11 +12,12 @@ import System.Process (readProcessWithExitCode)
 import Proof.Assistant.Helpers
 import Proof.Assistant.RefreshFile
 import Proof.Assistant.Request
+import Proof.Assistant.Response
 import Proof.Assistant.ResourceLimit
 import Proof.Assistant.Settings
 import Proof.Assistant.State
 
-callLean :: InterpreterState LeanSettings -> InterpreterRequest -> IO ByteString
+callLean :: InterpreterState LeanSettings -> InterpreterRequest -> IO BotResponse
 callLean InterpreterState{..} ir = do
   let LeanSettings{..} = coerce settings
       s@ExternalInterpreterSettings{..} = externalLean
@@ -31,8 +31,8 @@ callLean InterpreterState{..} ir = do
         asyncTimer = asyncWait time
     eresult <- race asyncTimer (handleErrorMaybe asyncExecutable)
     case eresult of
-      Left ()  -> pure "Time limit exceeded"
-      Right bs -> pure bs
+      Left ()  -> pure (TextResponse "Time limit exceeded")
+      Right bs -> pure (TextResponse bs)
 
 runWithSandboxMaybe
   :: Maybe SandboxSettings -> Executable -> CmdArgs -> FilePath -> IO (ExitCode, String, String)

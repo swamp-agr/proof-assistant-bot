@@ -8,6 +8,7 @@
     4. [Lean](#lean)
     5. [Arend](#arend)
     6. [Rzk](#rzk)
+    7. [Alloy](#alloy)
 3. [Usage](#usage)
 4. [Available instances](#available-instances)
 5. [Acknowledgements](#acknowledgements)
@@ -170,6 +171,48 @@ export AREND_PATH="${AREND_ROOT_PROJECT_DIR}/Arend.jar"
 ### Rzk
 
 No actions required. See `cabal.project` for more details.
+
+### Alloy 6 / Alloy CLI Wrapper
+
+You can read about CLI Wrapper here: https://github.com/AlloyTools/org.alloytools.alloy/issues/211
+
+1. Get `nix` from [nixos.org](https://nixos.org/download.html#download-nix).
+
+2. Get `java` and `openjdk17` via `nix`:
+
+```bash
+nix-env -i openjdk-17.0.4+8
+```
+
+3. Set `JAVA_HOME` environment variable to your openjdk location. You can use `readlink $HOME/.nix-profile/bin/java` and strip `/bin/java` from the end.
+
+4. Get `alloy6` via `nix`:
+
+```bash
+nix-env -i alloy6
+```
+
+5. Create project directory to store Alloy projects (for different telegram chats) and set `ALLOY_PROJECT_DIR`.
+
+6. Create directory for Alloy CLI wrapper and prepare Alloy CLI Wrapper:
+
+```bash
+mkdir -p $ALLOY_PROJECT_DIR/bin
+cd $ALLOY_PROJECT_DIR
+# Download Alloy CLI Wrapper
+curl https://gist.githubusercontent.com/swamp-agr/560f0d9bf8dc034f99d6055a5a197285/raw/5b547616063ba834bfa2987bc1eb539f1ec8088d/Main.java > bin/Main.java
+javac -cp "$NIX_PROFILE/share/alloy/*" -Xlint:all bin/Main.java
+# Test: should be empty output and exit code 0
+java -cp $NIX_PROFILE/share/alloy/alloy6.jar:$ALLOY_PROJECT_DIR/bin Main
+```
+
+7. Set up `graphviz` and `imagemagick` for generating plots based on Alloy CLI Wrapper output:
+
+```bash
+nix-env -i graphviz imagemagick
+```
+
+8. Set `ALLOY_PATH` environment variable to `$NIX_PROFILE/share/alloy/alloy6.jar`.
 
 ## Usage
 

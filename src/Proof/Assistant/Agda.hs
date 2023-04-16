@@ -21,13 +21,14 @@ import Agda.Utils.FileName (absolute)
 import Proof.Assistant.Helpers
 import Proof.Assistant.RefreshFile (validate)
 import Proof.Assistant.Request
+import Proof.Assistant.Response
 import Proof.Assistant.Settings
 import Proof.Assistant.State
 
 import qualified Data.ByteString.Char8 as BS8
 
 -- | Call Agda with its state. It will parse and execute command from the 'InterpreterRequest'.
-callAgda :: AgdaState -> InterpreterRequest -> IO ByteString
+callAgda :: AgdaState -> InterpreterRequest -> IO BotResponse
 callAgda currentAgdaState@AgdaState{..} InterpreterRequest{..} = do
   let InternalInterpreterSettings{..} = internal (settings interpreterState)
       asyncApi = withChat interpreterRequestTelegramChatId currentAgdaState $ do
@@ -38,8 +39,8 @@ callAgda currentAgdaState@AgdaState{..} InterpreterRequest{..} = do
       asyncTimer = asyncWait (coerce timeout)
   eresult <- race asyncTimer (handleErrorMaybe asyncApi)
   case eresult of
-    Left () -> pure "Time limit exceeded"
-    Right result -> pure result
+    Left () -> pure (TextResponse "Time limit exceeded")
+    Right result -> pure (TextResponse result)
 
 -- | Since every chat associated with its own Agda state, we need to modify 'TCEnv'
 -- by setting 'envCurrentPath' with an absolute path to the corresponding file.
