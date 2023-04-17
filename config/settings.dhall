@@ -152,7 +152,7 @@ let alloySettings =
       , gifConverterExecutable = "convert"
       , gifConverterArgs =
           [ "-sharpen", "0x1.0", "-delay", "80"
-          , "-flatten", "-quality" "100"
+          , "-flatten", "-quality", "100"
           , "-loop", "0"
           ]
       , alloySharedDir = _alloySharedDir
