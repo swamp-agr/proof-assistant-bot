@@ -147,10 +147,13 @@ let alloySettings =
       { alloyProjectDir = _alloyProjectDir
       , dotGraphExecutable = "dot"
       , dotGraphArgs =
-          [ "-Tpng:cairo" ]
+          [ "-Tpng:cairo"
+          ]
       , gifConverterExecutable = "convert"
       , gifConverterArgs =
-          [ "-sharpen", "0x.4", "-delay", "80"
+          [ "-sharpen", "0x1.0", "-delay", "80"
+          , "-flatten", "-quality" "100"
+          , "-loop", "0"
           ]
       , alloySharedDir = _alloySharedDir
       , externalAlloy = emptyExternalSettings //
@@ -224,6 +227,8 @@ in
     /arend <input> - typecheck your input.
 
     /rzk #lang - typecheck input in the given language. See list of all supported languages here: github:fizruk/rzk.
+
+    /alloy <inout> - typecheck your input. Should return either text, PNG or GIF.
     ''
 , helpMessages = [] : List { mapKey : Text, mapValue : Text }
 , version =
@@ -241,6 +246,8 @@ in
   Lean (version 3.49.0, commit acf633e01a87, Release)
 
   Arend 1.9
+
+  Alloy 6.1.0.202111031525
   ''
 , interpretersSettings = interpreterSettings
 } : Settings
