@@ -152,7 +152,6 @@ let alloySettings =
       , gifConverterExecutable = "convert"
       , gifConverterArgs =
           [ "-sharpen", "0x1.0", "-delay", "80"
-          , "-flatten", "-quality", "100"
           ]
       , alloySharedDir = _alloySharedDir
       , externalAlloy = emptyExternalSettings //
@@ -227,7 +226,7 @@ in
 
     /rzk #lang - typecheck input in the given language. See list of all supported languages here: github:fizruk/rzk.
 
-    /alloy <inout> - typecheck your input. Should return either text, PNG or GIF.
+    /alloy <input> - typecheck your input. Should return either text, PNG or GIF.
     ''
 , helpMessages = [] : List { mapKey : Text, mapValue : Text }
 , version =
