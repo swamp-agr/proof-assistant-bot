@@ -106,7 +106,7 @@ sendResponseBack isMonospace response =
       sendIt = \case
         TgMsg msgReq -> sendMessage msgReq
         TgPng imageReq -> sendPhoto imageReq
-        TgGif gifReq -> sendDocument gifReq
+        TgGif gifReq -> sendAnimation gifReq
       waitAndRetry result = if responseOk result
         then pure ()
         else case responseParameters result >>= responseParametersRetryAfter of
