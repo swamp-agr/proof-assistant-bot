@@ -35,7 +35,6 @@ callAlloy InterpreterState{..} ir = do
           :: Executable -> CmdArgs -> FilePath -> Maybe [FilePath]
           -> IO (ExitCode, String, String)
         run exe arguments path' mPath = do
-          putStrLn $ t2s exe <> ": " <> show fullArgs
           readProcessWithExitCode (t2s exe) fullArgs ""
           where
             applyOutMaybe = case mPath of
