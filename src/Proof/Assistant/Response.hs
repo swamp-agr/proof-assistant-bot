@@ -5,10 +5,10 @@ module Proof.Assistant.Response where
 import Data.ByteString (ByteString)
 import Data.Text.Encoding (decodeUtf8)
 import Telegram.Bot.API
-  (ChatId, ContentType, DocumentFile (..), MessageId
+  (ChatId, ContentType, MessageId
   , InputFile (..), ParseMode (..), PhotoFile (..)
-  , SendDocumentRequest (..), SendMessageRequest (..), SendPhotoRequest (..), SomeChatId (..)
-  , defSendDocument, defSendMessage, defSendPhoto
+  , SendAnimationRequest (..), SendMessageRequest (..), SendPhotoRequest (..), SomeChatId (..)
+  , defSendAnimation, defSendMessage, defSendPhoto
   )
 
 import Proof.Assistant.Request
@@ -26,7 +26,7 @@ data InterpreterResponse = InterpreterResponse
 data TelegramMessage
   = TgMsg SendMessageRequest
   | TgPng SendPhotoRequest
-  | TgGif SendDocumentRequest
+  | TgGif SendAnimationRequest
 
 -- | Cast 'InterpreterResponse' to either 'SendMessageRequest' or 'SendPhotoRequest'.
 -- For text messages:
@@ -61,10 +61,10 @@ toMessageRequest isMonospace InterpreterResponse{..} = case interpreterResponseR
             $ MakePhotoFile $ InputFile imgPath ctype
       in TgPng (reply { sendPhotoReplyToMessageId = Just interpreterResponseTelegramMessageId })
     "image/gif" ->
-      let reply = defSendDocument (SomeChatId interpreterResponseTelegramChatId)
-            $ MakeDocumentFile $ InputFile imgPath "image/gif"
+      let reply = defSendAnimation (SomeChatId interpreterResponseTelegramChatId)
+            $ InputFile imgPath "image/gif"
       in TgGif
-        (reply { sendDocumentReplyToMessageId = Just interpreterResponseTelegramMessageId })
+        (reply { sendAnimationReplyToMessageId = Just interpreterResponseTelegramMessageId })
     _ ->
       let reply =
             defSendMessage (SomeChatId interpreterResponseTelegramChatId) "Unsupported request"
