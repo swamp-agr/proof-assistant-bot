@@ -151,7 +151,10 @@ let alloySettings =
           ]
       , gifConverterExecutable = "convert"
       , gifConverterArgs =
-          [ "-sharpen", "0x1.0", "-delay", "80"
+          [ "-sharpen", "0x.4", "-delay", "80"
+          , "-coalesce"
+          , "-filter", "Mitchell"
+          , "-scale", "250%"
           ]
       , alloySharedDir = _alloySharedDir
       , externalAlloy = emptyExternalSettings //
