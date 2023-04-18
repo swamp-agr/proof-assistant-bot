@@ -14,7 +14,14 @@ import Telegram.Bot.API
 import Proof.Assistant.Request
 
 -- | Bot response: either text message or picture (filepath and its content type).
-data BotResponse = TextResponse !ByteString | ImageResponse !ContentType !FilePath
+data BotResponse
+  = TextResponse !ByteString
+  | ImageResponse
+      { imgResponseCType :: !ContentType
+      , imgResponsePath :: !FilePath
+      , imgResponeWidth :: !(Maybe Int)
+      , imgResponseHeight :: !(Maybe Int)
+      }
 
 -- | Response for Telegram.
 data InterpreterResponse = InterpreterResponse
@@ -55,7 +62,7 @@ toMessageRequest isMonospace InterpreterResponse{..} = case interpreterResponseR
     , sendMessageAllowSendingWithoutReply = Nothing
     , sendMessageReplyMarkup              = Nothing
     }
-  ImageResponse ctype imgPath -> case ctype of
+  ImageResponse ctype imgPath mwidth mheight -> case ctype of
     "image/png" ->
       let reply = defSendPhoto (SomeChatId interpreterResponseTelegramChatId)
             $ MakePhotoFile $ InputFile imgPath ctype
@@ -65,8 +72,8 @@ toMessageRequest isMonospace InterpreterResponse{..} = case interpreterResponseR
             $ InputFile imgPath "image/gif"
       in TgGif
         (reply { sendAnimationReplyToMessageId = Just interpreterResponseTelegramMessageId
-               , sendAnimationWidth = Just 880
-               , sendAnimationHeight = Just 1280
+               , sendAnimationWidth = mwidth
+               , sendAnimationHeight = mheight
                })
 
     _ ->

@@ -7,12 +7,14 @@ module Proof.Assistant.Alloy where
 import Control.Concurrent.Async (race)
 import Control.Monad (forM)
 import Data.Coerce (coerce)
+import Data.Maybe (mapMaybe)
 import Data.Text (unpack, pack)
 import System.Directory
   (createDirectoryIfMissing, listDirectory, removeFile, withCurrentDirectory)
 import System.Exit (ExitCode)
 import System.FilePath
 import System.Process (readProcessWithExitCode)
+import Text.Read (readMaybe)
 
 import Proof.Assistant.Helpers
 import Proof.Assistant.RefreshFile
@@ -37,10 +39,13 @@ callAlloy InterpreterState{..} ir = do
         run exe arguments path' mPath = do
           readProcessWithExitCode (t2s exe) fullArgs ""
           where
+            addPathAsArg "" = id
+            addPathAsArg p = (<> [p])
+
             applyOutMaybe = case mPath of
               Nothing -> id
               Just extra -> (<> extra)
-            fullArgs = applyOutMaybe ((unpack <$> coerce arguments) <> [path'])
+            fullArgs = applyOutMaybe $ addPathAsArg path' (unpack <$> coerce arguments)
         runProcess = run executable args path Nothing
         asyncExecutable = do
           setPriority priority
@@ -62,18 +67,49 @@ callAlloy InterpreterState{..} ir = do
         dot : [] -> do
           let imagePath = mkImagePath True dot
           _ <- run dotGraphExecutable dotGraphArgs dot $ Just ["-o" <> imagePath]
-          pure (ImageResponse "image/png" imagePath)
+          pure (ImageResponse "image/png" imagePath Nothing Nothing)
         dots -> do
           images <- forM dots $ \dot -> do
             let imagePath = mkImagePath False dot
             _ <- run dotGraphExecutable dotGraphArgs dot $ Just ["-o" <> imagePath]
             pure imagePath
-          let fullGifArgs = gifConverterArgs <> CmdArgs (pack <$> images)
+
+          let imagesAsArgs = CmdArgs (pack <$> images)
+              fullImgHelperArgs = imageHelperArgs <> imagesAsArgs
+
+          (_code, stdout, _stderr) <- run imageHelperExecutable fullImgHelperArgs "" Nothing
+
+          let (mwidth, mheight, canvasArgs) = makeCanvasArgs stdout
+              fullGifArgs = canvasArgs <> gifConverterArgs <> imagesAsArgs
               gifPath = mkGifPath path
+
           _ <- run gifConverterExecutable fullGifArgs gifPath Nothing
-          pure (ImageResponse "image/gif" gifPath)
-    -- removeIntermediateFiles dir
+          pure (ImageResponse "image/gif" gifPath mwidth mheight)
+    removeIntermediateFiles dir
     return result
+
+makeCanvasArgs :: String -> (Maybe Int, Maybe Int, CmdArgs)
+makeCanvasArgs stdout = (mwidth, mheight, args) 
+  where
+    splitOn c x = (takeWhile (/= c) x, reverse . takeWhile (/= c) . reverse $ x)
+    parse = fmap (splitOn '-') . filter (/= mempty) . lines
+    parseInts (w, h) = case (readMaybe w, readMaybe h) of
+      (Just wn, Just hn) -> Just (wn, hn)
+      (Just wn, Nothing) -> Just (wn, 0 :: Int)
+      (Nothing, Just hn) -> Just (0 :: Int, hn)
+      _ -> Nothing
+    safeMaximum [] = 0
+    safeMaximum xs = maximum xs
+    textDimensions = parse stdout
+    dimensions = mapMaybe parseInts textDimensions
+    maxWidth = safeMaximum (fst <$> dimensions)
+    maxHeight = safeMaximum (snd <$> dimensions)
+    restoreMaybe 0 = Nothing
+    restoreMaybe x = Just x
+
+    mwidth = restoreMaybe maxWidth
+    mheight = restoreMaybe maxHeight
+    args = CmdArgs ["-size", s2t maxWidth <> "x" <> s2t maxHeight, "xc:white"]
 
 findDots :: FilePath -> IO [FilePath]
 findDots dir = do

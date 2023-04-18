@@ -27,6 +27,10 @@ toInt = fromIntegral . coerce @_ @b
 t2s :: Coercible a Text => a -> String
 t2s = Text.unpack . coerce
 
+-- | Cast something as 'Text'.
+s2t :: Show a => a -> Text
+s2t = Text.pack . show
+
 -- | Wait N seconds.
 asyncWait :: Time -> IO ()
 asyncWait n = threadDelay (toInt @_ @Natural n * 1000000)

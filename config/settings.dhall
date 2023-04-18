@@ -45,6 +45,8 @@ let AlloySettings =
       , alloySharedDir : Text
       , dotGraphExecutable : Text
       , dotGraphArgs : List Text
+      , imageHelperExecutable : Text
+      , imageHelperArgs : List Text
       , gifConverterExecutable : Text
       , gifConverterArgs : List Text
       , externalAlloy : ExternalSettings
@@ -149,12 +151,18 @@ let alloySettings =
       , dotGraphArgs =
           [ "-Tpng:cairo"
           ]
+      , imageHelperExecutable = "identify"
+      , imageHelperArgs =
+          [ "-format", "%[fx:w]-%[fx:h]\n" ]
+          
       , gifConverterExecutable = "convert"
       , gifConverterArgs =
-          [ "-sharpen", "0x.4", "-delay", "80"
+          [ "-dispose", "previous"
+          -- , "-sharpen", "0x.4"
+          , "-delay", "80"
           , "-coalesce"
-          , "-filter", "Mitchell"
-          , "-scale", "250%"
+          -- , "-filter", "Mitchell"
+          , "-deconstruct"
           ]
       , alloySharedDir = _alloySharedDir
       , externalAlloy = emptyExternalSettings //

@@ -61,6 +61,8 @@ data AlloySettings = AlloySettings
   { alloyProjectDir :: !FilePath
   , dotGraphExecutable :: !Executable
   , dotGraphArgs :: !CmdArgs
+  , imageHelperExecutable :: !Executable
+  , imageHelperArgs :: !CmdArgs
   , gifConverterExecutable :: !Executable
   , gifConverterArgs :: !CmdArgs
   , alloySharedDir :: !FilePath
