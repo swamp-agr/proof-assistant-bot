@@ -64,7 +64,11 @@ toMessageRequest isMonospace InterpreterResponse{..} = case interpreterResponseR
       let reply = defSendAnimation (SomeChatId interpreterResponseTelegramChatId)
             $ InputFile imgPath "image/gif"
       in TgGif
-        (reply { sendAnimationReplyToMessageId = Just interpreterResponseTelegramMessageId })
+        (reply { sendAnimationReplyToMessageId = Just interpreterResponseTelegramMessageId
+               , sendAnimationWidth = Just 880
+               , sendAnimationHeight = Just 1280
+               })
+
     _ ->
       let reply =
             defSendMessage (SomeChatId interpreterResponseTelegramChatId) "Unsupported request"
