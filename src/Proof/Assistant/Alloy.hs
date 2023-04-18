@@ -72,7 +72,7 @@ callAlloy InterpreterState{..} ir = do
               gifPath = mkGifPath path
           _ <- run gifConverterExecutable fullGifArgs gifPath Nothing
           pure (ImageResponse "image/gif" gifPath)
-    removeIntermediateFiles dir
+    -- removeIntermediateFiles dir
     return result
 
 findDots :: FilePath -> IO [FilePath]
