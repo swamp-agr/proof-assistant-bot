@@ -411,13 +411,13 @@ Proof. simpl. reflexivity. Qed.
         \k -> \(t, s) -> k t s
     ```
 
-- Alloy is available via `/alloy` command. 
+- Alloy is available via `/alloy` command.
 
     - Example:
 
     ```alloy
     /alloy open util/ordering[Id]
-    
+
     sig Node {
      id : one Id,
      succ : one Node,
