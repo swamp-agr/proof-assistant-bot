@@ -109,7 +109,8 @@ makeCanvasArgs stdout = (mwidth, mheight, args)
 
     mwidth = restoreMaybe maxWidth
     mheight = restoreMaybe maxHeight
-    args = CmdArgs ["-size", s2t maxWidth <> "x" <> s2t maxHeight, "xc:white"]
+    dimensionsAsArgs = s2t maxWidth <> "x" <> s2t maxHeight
+    args = CmdArgs ["-size", dimensionsAsArgs, "-extent", dimensionsAsArgs, "-sample", dimensionsAsArgs]
 
 findDots :: FilePath -> IO [FilePath]
 findDots dir = do
