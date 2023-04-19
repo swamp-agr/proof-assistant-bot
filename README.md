@@ -515,7 +515,7 @@ Proof. simpl. reflexivity. Qed.
     check liveness for 3
     ```
 
-    - As result you can see ![Alloy temporal model instance with two different states]()
+    - As result you can see ![Alloy temporal model instance with two different states](resources/alloy-response.gif)
 
 ## Available instances
 
