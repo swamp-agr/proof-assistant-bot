@@ -157,9 +157,7 @@ let alloySettings =
           
       , gifConverterExecutable = "convert"
       , gifConverterArgs =
-          [ "-dispose", "previous"
-          -- , "-sharpen", "0x.4"
-          , "-delay", "80x100"
+          [ "-delay", "80x100"
           , "-deconstruct"
           ]
       , alloySharedDir = _alloySharedDir
