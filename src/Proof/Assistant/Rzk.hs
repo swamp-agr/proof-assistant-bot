@@ -6,7 +6,7 @@ import Control.Concurrent.Async (race)
 import Data.Coerce (coerce)
 import System.Mem
 
-import Rzk.Polylingual
+import Rzk.Main
 
 import Proof.Assistant.Helpers
 import Proof.Assistant.Request
@@ -22,8 +22,8 @@ callRzk InterpreterState{..} ir = do
         enableAllocationLimit
         setAllocationCounter (fromIntegral allocations)
         let makeResult = pure
-              . either toBS (toBS . compileSomeModule)
-              . safeParseSomeModule . fromBS . dropCommand
+              . either toBS toBS
+              . typecheckString . fromBS . dropCommand
         makeResult (interpreterRequestMessage ir)
       asyncTimer = asyncWait (coerce timeout)
   eresult <- race asyncTimer (handleErrorMaybe asyncApi)
