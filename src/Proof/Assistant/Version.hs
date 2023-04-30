@@ -23,7 +23,7 @@ proofAssistantBotVersion = showVersion version
 -- | Helper to build version from template message.
 makeVersion :: Text -> Text
 makeVersion txt = Text.unlines
-  [ Text.replace "<bot_version>" (Text.pack proofAssistantBotVersion) txt
-   ,Text.replace "<agda_version>" (Text.pack agdaVersion) txt
+  [ Text.replace "<bot_version>" (Text.pack proofAssistantBotVersion)
+    $ Text.replace "<agda_version>" (Text.pack agdaVersion) txt
   , "rzk v." <> Text.pack rzkVersion
   ]
