@@ -33,7 +33,7 @@ library
                     , rzk
                     , stm
                     , telegram-bot-api
-                    , telegram-bot-simple == 0.10
+                    , telegram-bot-simple == 0.12
                     , text
                     , unix
                     , unordered-containers
