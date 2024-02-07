@@ -3,8 +3,8 @@
 module Agda.Interaction.Command.ShowConstraints where
 
 import Agda.Interaction.BasicOps (getConstraints)
+import Agda.Syntax.Common.Pretty (prettyShow)
 import Agda.TypeChecking.Monad.Base (TCM)
-import Agda.Utils.Pretty (prettyShow)
 import Data.ByteString (ByteString)
 
 import qualified Data.ByteString.Char8 as BS8

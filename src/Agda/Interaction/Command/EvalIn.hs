@@ -4,8 +4,8 @@ module Agda.Interaction.Command.EvalIn where
 import Agda.Interaction.Base (ComputeMode (..))
 import Agda.Interaction.BasicOps (evalInCurrent)
 import Agda.Syntax.Abstract.Pretty (prettyA)
+import Agda.Syntax.Common.Pretty (prettyShow)
 import Agda.TypeChecking.Monad.Base (TCM)
-import Agda.Utils.Pretty (prettyShow)
 import Data.ByteString (ByteString)
 
 import Agda.Interaction.Command.Internal.Parser

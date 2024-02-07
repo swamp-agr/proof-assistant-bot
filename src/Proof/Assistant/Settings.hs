@@ -3,6 +3,7 @@
 {-# LANGUAGE DerivingStrategies #-}
 {-# LANGUAGE DuplicateRecordFields #-}
 {-# LANGUAGE GeneralizedNewtypeDeriving #-}
+{-# LANGUAGE NamedFieldPuns #-}
 {-# LANGUAGE OverloadedStrings #-}
 module Proof.Assistant.Settings where
 
@@ -133,10 +134,10 @@ class ToInterpreterState settings where
   getQueueSize :: settings -> Natural
 
 instance ToInterpreterState InternalInterpreterSettings where
-  getQueueSize = inputSize
+  getQueueSize InternalInterpreterSettings{inputSize} = inputSize
 
 instance ToInterpreterState ExternalInterpreterSettings where
-  getQueueSize = inputSize
+  getQueueSize ExternalInterpreterSettings{inputSize} = inputSize
 
 instance ToInterpreterState AgdaSettings where
   getQueueSize = getQueueSize . internal

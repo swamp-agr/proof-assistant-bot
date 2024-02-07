@@ -7,12 +7,12 @@ import Agda.Interaction.BasicOps
   (outputFormId, typeOfMeta, typesOfHiddenMetas, typesOfVisibleMetas)
 import Agda.Syntax.Abstract.Pretty (prettyA)
 import Agda.Syntax.Common (InteractionId (..))
+import Agda.Syntax.Common.Pretty (prettyShow, render)
 import Agda.Syntax.Position (noRange)
 import Agda.TypeChecking.Monad.Base (TCM, nmid)
 import Agda.TypeChecking.Monad.MetaVars
   (getInteractionRange, getMetaRange, withInteractionId, withMetaId)
 import Agda.Utils.Impossible (__IMPOSSIBLE__)
-import Agda.Utils.Pretty (prettyShow, render)
 import Data.ByteString (ByteString)
 
 import Agda.Interaction.Command.Internal.Parser

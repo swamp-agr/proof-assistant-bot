@@ -55,11 +55,11 @@ toMessageRequest isMonospace InterpreterResponse{..} = case interpreterResponseR
           else decodeUtf8 bytes <> "\n"
     , sendMessageParseMode                = if isMonospace then Just MarkdownV2 else Nothing
     , sendMessageEntities                 = Nothing
-    , sendMessageDisableWebPagePreview    = Nothing
+    , sendMessageReplyParameters          = Nothing
+    , sendMessageLinkPreviewOptions       = Nothing
     , sendMessageDisableNotification      = Nothing
     , sendMessageProtectContent           = Nothing
     , sendMessageReplyToMessageId         = Just interpreterResponseTelegramMessageId
-    , sendMessageAllowSendingWithoutReply = Nothing
     , sendMessageReplyMarkup              = Nothing
     }
   ImageResponse ctype imgPath mwidth mheight -> case ctype of

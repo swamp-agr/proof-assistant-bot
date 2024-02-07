@@ -4,14 +4,14 @@ module Agda.Interaction.Command.ShowContext where
 
 import Agda.Interaction.Command.Internal.Parser
 import Agda.Syntax.Common (InteractionId (..), argNameToString)
+import Agda.Syntax.Common.Pretty ((<+>), render, text)
 import Agda.TypeChecking.Monad.Base (TCM, getMetaInfo)
 import Agda.TypeChecking.Monad.Context (getContextTelescope)
 import Agda.TypeChecking.Monad.MetaVars (lookupInteractionId, lookupLocalMeta, withMetaInfo)
 import Agda.TypeChecking.Pretty (prettyTCM)
 import Agda.TypeChecking.Reduce (normalise)
 import Agda.TypeChecking.Substitute.Class (raise)
-import Agda.Utils.Pretty ((<+>), render, text)
-import Control.Monad.Except (zipWithM)
+import Control.Monad (zipWithM)
 import Data.ByteString (ByteString)
 
 import qualified Agda.Syntax.Internal as I

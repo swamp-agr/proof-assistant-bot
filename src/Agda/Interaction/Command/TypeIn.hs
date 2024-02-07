@@ -3,9 +3,9 @@ module Agda.Interaction.Command.TypeIn where
 
 import Agda.Interaction.Base (Rewrite (..))
 import Agda.Interaction.BasicOps (typeInMeta)
+import Agda.Syntax.Common.Pretty (prettyShow)
 import Agda.TypeChecking.Monad.Base (TCM)
 import Agda.TypeChecking.Pretty (prettyTCM)
-import Agda.Utils.Pretty (prettyShow)
 import Data.ByteString (ByteString)
 
 import Agda.Interaction.Command.Internal.Parser
