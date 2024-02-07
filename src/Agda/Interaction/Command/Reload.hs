@@ -8,13 +8,14 @@ import Agda.Interaction.Imports
 import Agda.Interaction.FindFile (SourceFile (..))
 import Agda.Interaction.Options (optOnlyScopeChecking)
 import Agda.Syntax.Translation.ConcreteToAbstract (importPrimitives)
-import Agda.TypeChecking.Errors (applyFlagsToTCWarnings, prettyError)
+import Agda.TypeChecking.Errors (applyFlagsToTCWarnings, renderError)
 import Agda.TypeChecking.Monad.Base
   (ModuleCheckMode (..), TypeError (..), TCM, commandLineOptions, iInsideScope, typeError)
 import Agda.TypeChecking.Monad.State (setScope)
 import Agda.Utils.FileName (AbsolutePath)
 import Agda.Utils.Null (unlessNullM)
-import Control.Monad.Except (MonadError(..), unless)
+import Control.Monad (unless)
+import Control.Monad.Except (MonadError(..))
 import Data.ByteString (ByteString)
 
 import Proof.Assistant.Helpers (toBS)
@@ -27,7 +28,7 @@ reload (Just file) = do
   _ <- importPrimitives
   pure "Type checked succesfully."
   `catchError` \e -> do
-    s <- prettyError e
+    s <- renderError e
     pure $ "Failed. " <> toBS s
 
 checkFile :: AbsolutePath -> TCM CheckResult

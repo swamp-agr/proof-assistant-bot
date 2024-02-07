@@ -1,9 +1,9 @@
 {-# LANGUAGE OverloadedStrings #-}
 module Agda.Interaction.Command.GiveMeta where
 
+import Agda.Syntax.Common.Pretty (prettyShow)
 import Agda.TypeChecking.Monad.Base (TCM)
 import Agda.TypeChecking.Pretty (prettyTCM)
-import Agda.Utils.Pretty (prettyShow)
 import Data.ByteString (ByteString)
 
 import Agda.Interaction.Base (UseForce (..))

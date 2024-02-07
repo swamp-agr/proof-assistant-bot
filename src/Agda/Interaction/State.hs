@@ -4,7 +4,7 @@ module Agda.Interaction.State where
 
 import Agda.Interaction.Options
 import Agda.Syntax.Translation.ConcreteToAbstract (importPrimitives)
-import Agda.TypeChecking.Errors (prettyError)
+import Agda.TypeChecking.Errors (renderError)
 import Agda.TypeChecking.Monad.Base
 import Agda.TypeChecking.Monad.Options (setCommandLineOptions)
 import Control.Monad.Except (MonadError(..))
@@ -67,7 +67,7 @@ runAgda as action = do
 -- | Catch error from Agda and make it looks pretty.
 catchAgdaError :: MonadTCM m => TCErr -> m ByteString
 catchAgdaError e = do
-  s <- prettyError e
+  s <- renderError e
   return $ toBS s
 
 -- | Helper to modify 'TCEnv'.
