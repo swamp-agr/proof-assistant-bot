@@ -1,5 +1,15 @@
 # Revision history for proof-assistant-bot
 
+## 0.2.2 -- 2024-02-07
+
+- Support GHC 9.4 (see [#43](https://github.com/swamp-agr/proof-assistant-bot/pull/43)).
+- Also various dependencies versions bumps:
+  - base-4.17
+  - Agda-2.6.4
+  - mtl-2.3.1
+  - rzk-0.7
+  - telegram-bot-simple-0.13
+
 ## 0.2.1 -- 2023-02-07
 
 - Agda bumped to 2.6.3, telegram-bot-simple bumped to 0.9 (see [#29](https://github.com/swamp-agr/proof-assistant-bot/pull/29)).
