@@ -1,5 +1,6 @@
 let nixProfile = env:NIX_PROFILE as Text
 let leanBinPath = env:LEAN_BIN_PATH as Text
+let lakeBinPath = env:LAKE_BIN_PATH as Text
 let leanProjectPath = env:LEAN_PROJECT_PATH as Text
 
 let Limit = { soft : Natural, hard : Natural }
@@ -90,8 +91,8 @@ let idrisSettings = emptyExternalSettings //
       }
 let leanSettings =
       { externalLean = emptyExternalSettings //
-          { args = ["--profile"] : List Text
-          , executable = leanBinPath
+          { args = ["env", leanBinPath, "--profile", "--run"] : List Text
+          , executable = lakeBinPath
           , tempFilePrefix = "lean"
           , fileExtension = "lean"
           , time = 10
@@ -100,6 +101,7 @@ let leanSettings =
               , sandboxArgs =
                 [ "--unshare-all"
                 -- environmental variables
+                , "--setenv", "LAKE_BIN_PATH", lakeBinPath
                 , "--setenv", "LEAN_BIN_PATH", leanBinPath
                 , "--setenv", "LEAN_PROJECT_PATH", leanProjectPath
                 -- directories binds
