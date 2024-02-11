@@ -124,24 +124,30 @@ export IDRIS2_BIN_PATH="$HOME/.nix-profile/bin/idris2"
 2. Install `lean` via `nix`:
 
 ```bash
-nix-env -i lean
+nix-env -i lean4
 ```
 
-3. Install `leanproject` via `nix`:
+3. Create project directory:
 
-```bash
-nix-env -i mathlibtools
+```
+lake new leanproject
 ```
 
-4. Run `leanproject new lean`.
+It will create directory `leanproject` with all necessary files.
 
-5. Set `LEAN_BIN_PATH` environmental variable:
+4. Set `LEAN_BIN_PATH` environmental variable:
 
 ```bash
 export LEAN_BIN_PATH="$HOME/.nix-profile/bin/lean"
 ```
 
-6. Set `LEAN_PROJECT_PATH` to the newly created project directory.
+5. Set `LEAN_PROJECT_PATH` to the newly created project directory.
+
+6. Set `LAKE_BIN_PATH` environmental variable:
+
+```bash
+export LAKE_BIN_PATH="$HOME/.nix-profile/bin/lake"
+```
 
 ### Arend
 
@@ -150,7 +156,7 @@ export LEAN_BIN_PATH="$HOME/.nix-profile/bin/lean"
 2. Get `java` and `openjdk17` via `nix`:
 
 ```bash
-nix-env -i openjdk-17.0.4+8
+nix-env -iA nixpkgs.jdk17
 ```
 
 3. Set `JAVA_HOME` environment variable to your openjdk location. You can use `readlink $HOME/.nix-profile/bin/java` and strip `/bin/java` from the end.
@@ -181,7 +187,7 @@ You can read about CLI Wrapper here: https://github.com/AlloyTools/org.alloytool
 2. Get `java` and `openjdk17` via `nix`:
 
 ```bash
-nix-env -i openjdk-17.0.4+8
+nix-env -iA nixpkgs.jdk17
 ```
 
 3. Set `JAVA_HOME` environment variable to your openjdk location. You can use `readlink $HOME/.nix-profile/bin/java` and strip `/bin/java` from the end.
@@ -209,7 +215,7 @@ java -cp $NIX_PROFILE/share/alloy/alloy6.jar:$ALLOY_PROJECT_DIR/bin Main
 7. Set up `graphviz` and `imagemagick` for generating plots based on Alloy CLI Wrapper output:
 
 ```bash
-nix-env -i graphviz imagemagick
+nix-env -iA nixpkgs.graphviz nixpkgs.imagemagick
 ```
 
 8. Set `ALLOY_PATH` environment variable to `$NIX_PROFILE/share/alloy/alloy6.jar`.
