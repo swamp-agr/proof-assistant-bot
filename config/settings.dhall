@@ -108,7 +108,7 @@ let leanSettings =
                 , "--ro-bind", "/lib", "/lib"
                 , "--ro-bind", "/lib64", "/lib64"
                 , "--ro-bind", "/nix/store", "/nix/store"
-                , "--ro-bind", leanProjectPath, leanProjectPath
+                , "--bind", leanProjectPath, leanProjectPath
                 , "--ro-bind", nixProfile, nixProfile
                 -- runtime
                 , "--proc", "/proc"
