@@ -6,7 +6,7 @@ import Agda.Interaction.Options
 import Agda.Syntax.Translation.ConcreteToAbstract (importPrimitives)
 import Agda.TypeChecking.Errors (renderError)
 import Agda.TypeChecking.Monad.Base
-import Agda.TypeChecking.Monad.Options (setCommandLineOptions)
+import Agda.TypeChecking.Monad.Options (setCommandLineOptions, setPragmaOptions)
 import Control.Monad.Except (MonadError(..))
 import Data.ByteString (ByteString)
 import Data.IORef (IORef, newIORef, readIORef, atomicWriteIORef, atomicModifyIORef')
@@ -30,10 +30,12 @@ newAgdaState settings = do
   interpreterState <- newInterpreterState $ settings
   let state0 = initState
       env = initEnv
+      opts = defaultOptions { optLibraries = ["standard-library"] }
   tmpDir <- getTemporaryDirectory
   (_, state1) <- withCurrentDirectory tmpDir
     $ runTCM env state0
-    $ setCommandLineOptions defaultOptions >> importPrimitives
+    $ setCommandLineOptions opts
+    >> setPragmaOptions (optPragmaOptions opts) >> importPrimitives
     
   agdaStateRef <- newIORef state1
   agdaEnvRef <- newIORef env

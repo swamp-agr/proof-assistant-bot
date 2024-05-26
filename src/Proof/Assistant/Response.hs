@@ -61,6 +61,7 @@ toMessageRequest isMonospace InterpreterResponse{..} = case interpreterResponseR
     , sendMessageProtectContent           = Nothing
     , sendMessageReplyToMessageId         = Just interpreterResponseTelegramMessageId
     , sendMessageReplyMarkup              = Nothing
+    , sendMessageBusinessConnectionId     = Nothing
     }
   ImageResponse ctype imgPath mwidth mheight -> case ctype of
     "image/png" ->
