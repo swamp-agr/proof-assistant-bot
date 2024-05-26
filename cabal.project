@@ -1,1 +1,8 @@
 packages: .
+
+-- Switch from fork once it's merged in upstream
+source-repository-package
+  type: git
+  location: https://github.com/swamp-agr/rzk.git
+  subdir: rzk
+  tag: d961aeda401edc312b5be3b1fc1181a1f66c3641
