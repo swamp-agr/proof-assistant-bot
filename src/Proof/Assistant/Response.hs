@@ -56,6 +56,7 @@ toMessageRequest isMonospace InterpreterResponse{..} = case interpreterResponseR
     , sendMessageParseMode                = if isMonospace then Just MarkdownV2 else Nothing
     , sendMessageEntities                 = Nothing
     , sendMessageReplyParameters          = Nothing
+    , sendMessageMessageEffectId          = Nothing
     , sendMessageLinkPreviewOptions       = Nothing
     , sendMessageDisableNotification      = Nothing
     , sendMessageProtectContent           = Nothing

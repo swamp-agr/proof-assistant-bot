@@ -32,7 +32,7 @@ library
                     , process
                     , rzk
                     , stm
-                    , telegram-bot-api
+                    , telegram-bot-api >= 7.4
                     , telegram-bot-simple >= 0.14.1
                     , text
                     , unix
