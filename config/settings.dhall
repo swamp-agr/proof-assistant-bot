@@ -242,7 +242,7 @@ in
 
     /rzk #lang - typecheck input in the given language. See list of all supported languages here: github:fizruk/rzk.
 
-    /alloy <input> - typecheck your input. Should return either text, PNG or GIF.
+    /alloy <input> - model check your input. Should return either text, PNG or GIF.
     ''
 , helpMessages = [] : List { mapKey : Text, mapValue : Text }
 , version =
