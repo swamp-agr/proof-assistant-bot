@@ -29,7 +29,11 @@ let InternalSettings =
       , sourceFilePrefix : Text
       , sourceFileExtension : Text
       }
-let AgdaSettings = { internal : InternalSettings }
+let AgdaSettings =
+      { internal : InternalSettings
+      , agdaStdlibDir : Text
+      , agdaSrcDir : Text
+      }
 let LeanSettings =
       { projectDir : Text
       , externalLean : ExternalSettings
@@ -120,12 +124,15 @@ let leanSettings =
           }
       , projectDir = leanProjectPath
       }
+let _agdaStdlibDir = env:AGDA_STDLIB_PATH as Text
 let agdaSettings =
       { internal = emptyInternalSettings //
           { sourceFilePrefix = "agda"
           , sourceFileExtension = "agda"
           , timeout = 60
           }
+      , agdaStdlibDir = "${_agdaStdlibDir}"
+      , agdaSrcDir = "src"
       }
 let rzkSettings = emptyInternalSettings // { timeout = 60 }
 let _arendLibDir = env:AREND_STDLIB_PATH as Text

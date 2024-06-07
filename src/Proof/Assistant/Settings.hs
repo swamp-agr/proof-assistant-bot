@@ -42,7 +42,9 @@ data InternalInterpreterSettings = InternalInterpreterSettings
   } deriving (Generic, FromDhall)
 
 data AgdaSettings = AgdaSettings
-  { internal :: !InternalInterpreterSettings 
+  { internal :: !InternalInterpreterSettings
+  , agdaSrcDir :: !FilePath
+  , agdaStdlibDir :: !FilePath
   } deriving (Generic, FromDhall)
 
 data LeanSettings = LeanSettings

@@ -95,5 +95,6 @@ storeRequestContent absFilepath content = do
         [ BS8.unwords [ "module", moduleName, "where" ]
         , ""
         , content
+        , ""
         ]
   BS8.writeFile (filePath absFilepath) moduleContent

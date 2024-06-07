@@ -9,7 +9,7 @@ module Proof.Assistant.Agda where
 import Control.Concurrent.Async
 import Data.ByteString (ByteString)
 import Data.Coerce
-import System.Directory (getTemporaryDirectory)
+import System.Directory (withCurrentDirectory)
 import System.FilePath ((</>), (<.>))
 import System.Mem
 import Telegram.Bot.API (ChatId (..))
@@ -46,17 +46,19 @@ callAgda currentAgdaState@AgdaState{..} InterpreterRequest{..} = do
 -- by setting 'envCurrentPath' with an absolute path to the corresponding file.
 withChat :: ChatId -> AgdaState -> IO ByteString -> IO ByteString
 withChat chatId state action = do
-  tmpDir <- getTemporaryDirectory
-  let InternalInterpreterSettings{..} = (internal . settings . interpreterState) state
+  let agdaDir = (agdaStdlibDir . settings . interpreterState) state
+      agdaSrcPrefix = (agdaSrcDir . settings . interpreterState) state
+      InternalInterpreterSettings{..} = (internal . settings . interpreterState) state
       chatIdToString = show . coerce @ChatId @Integer
-      sourceFile = tmpDir
+      sourceFile = (agdaDir </> agdaSrcPrefix)
         </> sourceFilePrefix
         <> chatIdToString chatId
         <.> sourceFileExtension
   absSourceFile <- absolute sourceFile
   let modifiedEnv s = s { envCurrentPath = Just absSourceFile }
   setEnv state modifiedEnv
-  pure . validate sourceFile =<< action
+  withCurrentDirectory agdaDir $ do
+    pure . validate sourceFile =<< action
 
 -- | Parse user input as command and execute in Agda.
 interpretAgda :: AgdaState -> ByteString -> IO ByteString

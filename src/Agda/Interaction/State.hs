@@ -6,11 +6,12 @@ import Agda.Interaction.Options
 import Agda.Syntax.Translation.ConcreteToAbstract (importPrimitives)
 import Agda.TypeChecking.Errors (renderError)
 import Agda.TypeChecking.Monad.Base
-import Agda.TypeChecking.Monad.Options (setCommandLineOptions, setPragmaOptions)
+import Agda.TypeChecking.Monad.Options (setCommandLineOptions, setLibraryPaths, setPragmaOptions)
+import Agda.Utils.FileName (absolute)
 import Control.Monad.Except (MonadError(..))
 import Data.ByteString (ByteString)
 import Data.IORef (IORef, newIORef, readIORef, atomicWriteIORef, atomicModifyIORef')
-import System.Directory (getTemporaryDirectory, withCurrentDirectory)
+import System.Directory (withCurrentDirectory)
 
 import Proof.Assistant.Helpers (toBS)
 import Proof.Assistant.Settings
@@ -30,12 +31,22 @@ newAgdaState settings = do
   interpreterState <- newInterpreterState $ settings
   let state0 = initState
       env = initEnv
-      opts = defaultOptions { optLibraries = ["standard-library"] }
-  tmpDir <- getTemporaryDirectory
-  (_, state1) <- withCurrentDirectory tmpDir
+      projectDir = agdaStdlibDir settings
+      opts = defaultOptions
+        { optLibraries = ["standard-library"]
+        , optInteractive = True
+        , optGHCiInteraction = True
+        , optCompileDir = Just projectDir
+        , optExitOnError = False
+        , optUseLibs = True
+        }
+  absProjectDir <- absolute projectDir
+  (_, state1) <- withCurrentDirectory projectDir
     $ runTCM env state0
     $ setCommandLineOptions opts
-    >> setPragmaOptions (optPragmaOptions opts) >> importPrimitives
+    >> setPragmaOptions defaultPragmaOptions
+    >> setLibraryPaths absProjectDir opts
+    >> importPrimitives
     
   agdaStateRef <- newIORef state1
   agdaEnvRef <- newIORef env
